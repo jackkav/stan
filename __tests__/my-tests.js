@@ -1,38 +1,37 @@
-test('Test1', () => {
+test('truthy stuff', () => {
   expect(1).toBeTruthy()
+  expect(' ').toBeTruthy()
 })
 
-test('Test2', () => {
-  expect([]).toBeTruthy()
-})
-
-test('Test3', () => {
+test('falsy stuff', () => {
   expect('').toBeFalsy()
+  expect(0).toBeFalsy()
+  expect(null).toBeFalsy()
 })
 
-test('Test4', () => {
+test('objects are a thing even when empty', () => {
   expect({}).toBeTruthy()
 })
 
-test('Test5', () => {
-  expect(0).toBeFalsy()
+test('arrays are imp[lemented as objects, thus also a thing', () => {
+  expect([]).toBeTruthy()
 })
 
-test('Test array', () => {
+test('arrays can be wierd', () => {
   let arr = Array(2).fill([0.0])
   arr[1][1] = 1
   expect(arr[1][1]).toBeTruthy()
 })
 
-test('Test NaN', () => {
+test('who`s your NaN', () => {
   expect(isNaN()).toBeTruthy()
   expect(isNaN(NaN)).toBeTruthy()
   expect(isNaN(9)).toBeFalsy()
 })
 
-test('Test sort', () => {
-  const input = [31415926535897932384626433832795, 1, 3, 10, 3, 5]
-  const expected = [1, 3, 3, 5, 10, 31415926535897932384626433832795]
+test('sort numbers and that', () => {
+  const input = [31415926535897932384626433832795, 0.1, 3, 10, 3, 5]
+  const expected = [0.1, 3, 3, 5, 10, 31415926535897932384626433832795]
   expect(bigSorting(input)).toEqual(expected)
 })
 
