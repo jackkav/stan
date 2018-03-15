@@ -35,6 +35,6 @@ test('sort numbers and that', () => {
   expect(bigSorting(input)).toEqual(expected)
 })
 
-function bigSorting (arr) {
+function bigSorting(arr) {
   return arr.sort((a, b) => +b <= +a)
 }

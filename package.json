@@ -5,22 +5,42 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "lint": "standard"
+    "lint": "eslint ."
   },
   "author": "Jack Kavanagh",
   "license": "ISC",
   "devDependencies": {
+    "eslint": "^4.18.2",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-jest": "^21.15.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1",
     "jest": "^22.4.2",
+    "prettier": "^1.11.1",
     "standard": "^11.0.1"
   },
-  "standard": {
-    "globals": [
-      "test",
-      "expect"
-    ]
+  "prettier": {
+    "printWidth": 120,
+    "singleQuote": true,
+    "bracketSpacing": false,
+    "trailingComma": "es5",
+    "semi": false
   },
-  "dependencies": {
-    "webtorrent": "^0.98.24",
-    "webtorrent-hybrid": "^1.0.6"
+  "engines": {
+    "node": ">=4"
+  },
+  "eslintConfig": {
+    "extends": ["standard", "prettier", "plugin:jest/recommended"],
+    "plugins": ["prettier", "jest"],
+    "rules": {
+      "prettier/prettier": 2
+    },
+    "env": {
+      "jest/globals": true
+    }
   }
 }
