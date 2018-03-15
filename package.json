@@ -10,13 +10,17 @@
   "author": "Jack Kavanagh",
   "license": "ISC",
   "devDependencies": {
-    "standard": "^11.0.1",
-    "jest": "^22.4.2"
+    "jest": "^22.4.2",
+    "standard": "^11.0.1"
   },
   "standard": {
     "globals": [
       "test",
       "expect"
     ]
+  },
+  "dependencies": {
+    "webtorrent": "^0.98.24",
+    "webtorrent-hybrid": "^1.0.6"
   }
 }
