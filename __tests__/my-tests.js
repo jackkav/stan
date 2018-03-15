@@ -18,6 +18,12 @@ test('Test5', () => {
   expect(0).toBeFalsy()
 })
 
+test('Test array', () => {
+  let arr = Array(2).fill([0.0])
+  arr[1][1] = 1
+  expect(arr[1][1]).toBeTruthy()
+})
+
 test('Test NaN', () => {
   expect(isNaN()).toBeTruthy()
   expect(isNaN(NaN)).toBeTruthy()
