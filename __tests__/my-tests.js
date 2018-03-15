@@ -13,12 +13,12 @@ test('objects are a thing even when empty', () => {
   expect({}).toBeTruthy()
 })
 
-test('arrays are imp[lemented as objects, thus also a thing', () => {
+test('arrays are implemented as objects, thus also a thing', () => {
   expect([]).toBeTruthy()
 })
 
 test('arrays can be wierd', () => {
-  let arr = Array(2).fill([0.0])
+  let arr = Array(2).fill([0, 0])
   arr[1][1] = 1
   expect(arr[1][1]).toBeTruthy()
 })
