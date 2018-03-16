@@ -59,15 +59,49 @@ function timeConversion(s) {
   return isAM ? s.slice(0, 8) : hours + 12 + minutesAndSeconds
 }
 
+const morse = `0  ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄
+1 	▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄
+2 	▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄
+3 	▄ ▄ ▄ ▄▄▄ ▄▄▄
+4 	▄ ▄ ▄ ▄ ▄▄▄
+5 	▄ ▄ ▄ ▄ ▄
+6 	▄▄▄ ▄ ▄ ▄ ▄
+7 	▄▄▄ ▄▄▄ ▄ ▄ ▄
+8 	▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄
+9 	▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄
+`
 test('morse code and that', () => {
-  expect(numberToMorse(0)).toEqual('▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄')
-  expect(numberToMorse(1)).toEqual('▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄')
-  expect(numberToMorse(2)).toEqual('▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄')
-  expect(numberToMorse(6)).toEqual('▄▄▄ ▄ ▄ ▄ ▄')
+  // expect(numberToMorse(0)).toEqual('▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄')
+  // expect(numberToMorse(1)).toEqual('▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄')
+  // expect(numberToMorse(2)).toEqual('▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄')
+  // expect(numberToMorse(6)).toEqual('▄▄▄ ▄ ▄ ▄ ▄')
   expect(numberToMorse(9)).toEqual('▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄')
 })
 
 const numberToMorse = n => {
   const lookup = '▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄ ▄ ▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄'
-  return lookup.split` `.slice(10 - n, 15 - n).join` `
+  const begin = 10 - n
+  const end = 15 - n
+  return lookup.split` `.slice(begin, end).join` `
+}
+
+test('number from morse code', () => {
+  expect(morseToNumber('▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄')).toEqual(0)
+  expect(morseToNumber('▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄')).toEqual(1)
+  expect(morseToNumber('▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄')).toEqual(2)
+  expect(morseToNumber('▄▄▄ ▄ ▄ ▄ ▄')).toEqual(6)
+  expect(morseToNumber('▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄')).toEqual(9)
+})
+
+const morseToNumber = m => {
+  const lookup = '▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄ ▄ ▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄'
+  const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  let r = 0
+  numbers.forEach(x => {
+    const n = lookup.split` `.slice(10 - x, 15 - x)
+    if (n.join` ` === m) {
+      r = x
+    }
+  })
+  return r
 }
