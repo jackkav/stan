@@ -38,3 +38,23 @@ test('sort numbers and that', () => {
 function bigSorting (arr) {
   return arr.sort((a, b) => +b <= +a)
 }
+
+test('12 hour dates and that', () => {
+  expect(timeConversion('07:45:00PM')).toEqual('19:45:00')
+  expect(timeConversion('12:45:00PM')).toEqual('12:45:00')
+  expect(timeConversion('12:45:00AM')).toEqual('00:45:00')
+})
+
+function timeConversion (s) {
+  const midday = '12'
+  const midnight = '00'
+  const isAM = s[8] !== 'P'
+  const isTwelve = s.slice(0, 2) === '12'
+  const isMidday = !isAM && isTwelve
+  const isMidnight = isAM && isTwelve
+  const hours = +s.slice(0, 2)
+  const minutesAndSeconds = s.slice(2, 8)
+  if (isMidday) return midday + minutesAndSeconds
+  if (isMidnight) return midnight + minutesAndSeconds
+  return isAM ? s.slice(0, 8) : hours + 12 + minutesAndSeconds
+}
