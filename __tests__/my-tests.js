@@ -96,6 +96,10 @@ test('number from morse code', () => {
 const morseToNumber = m => {
   const lookup = '▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄ ▄ ▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄'
   const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  // return numbers.reduce((c, x) => {
+  //   if (lookup.slice(10 - x, 15 - x).join` ` === m) return x
+  //   return 0 + c
+  // })
   let r = 0
   numbers.forEach(x => {
     const n = lookup.split` `.slice(10 - x, 15 - x)
@@ -104,4 +108,31 @@ const morseToNumber = m => {
     }
   })
   return r
+}
+
+const scriptArgs =
+  '▄▄▄   ▄ ▄ ▄ ▄   ▄          ▄ ▄ ▄ ▄▄▄ ▄▄▄   ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄   ▄▄▄ ▄▄▄ ▄ ▄ ▄   ▄▄▄ ▄ ▄ ▄ ▄   ▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄          ▄▄▄ ▄▄▄ ▄ ▄▄▄   ▄ ▄ ▄▄▄   ▄ ▄   ▄▄▄ ▄ ▄▄▄ ▄   ▄▄▄ ▄ ▄▄▄          ▄▄▄ ▄ ▄ ▄   ▄ ▄▄▄ ▄   ▄▄▄ ▄▄▄ ▄▄▄   ▄ ▄▄▄ ▄▄▄   ▄▄▄ ▄          ▄ ▄ ▄▄▄ ▄   ▄▄▄ ▄▄▄ ▄▄▄   ▄▄▄ ▄ ▄ ▄▄▄   ▄   ▄ ▄ ▄          ▄ ▄▄▄ ▄▄▄ ▄▄▄   ▄ ▄ ▄▄▄   ▄▄▄ ▄▄▄   ▄ ▄▄▄ ▄▄▄ ▄          ▄▄▄ ▄▄▄ ▄▄▄   ▄ ▄ ▄ ▄▄▄   ▄   ▄ ▄▄▄ ▄          ▄▄▄   ▄ ▄ ▄ ▄   ▄          ▄ ▄ ▄ ▄ ▄▄▄   ▄ ▄ ▄ ▄ ▄   ▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄   ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄   ▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄          ▄ ▄▄▄ ▄ ▄   ▄ ▄▄▄   ▄▄▄ ▄▄▄ ▄ ▄   ▄▄▄ ▄ ▄▄▄ ▄▄▄          ▄▄▄ ▄ ▄   ▄▄▄ ▄▄▄ ▄▄▄   ▄▄▄ ▄▄▄ ▄   ▄ ▄ ▄'
+const expected = 'THE 39761 QUICK BROWN FOXES JUMP OVER THE 45802 LAZY DOGS'
+
+test('pull numbers', () => {
+  expect(solve()).toEqual(expected)
+})
+
+const solve = () => {
+  const words = String(scriptArgs).split`       `
+  const first = words[1].trim()
+  const second = words[8].trim()
+  const firstNumber = first.split`   `.map(x => morseToNumber(x)).join``
+  const secondNumber = second.split`   `.map(x => morseToNumber(x)).join``
+  return `THE ${firstNumber} QUICK BROWN FOXES JUMP OVER THE ${secondNumber} LAZY DOGS`
+}
+
+test('averages', () => {
+  expect(averages(6, [-4, 3, -9, 0, 4, 1])).toEqual([0.5, 0.333333, 0.166667])
+})
+const averages = (size, arr) => {
+  const postive = arr.filter(x => x > 0).length / size
+  const negative = arr.filter(x => x < 0).length / size
+  const zeros = arr.filter(x => x === 0).length / size
+  return [+postive.toFixed(6), +negative.toFixed(6), +zeros.toFixed(6)]
 }
