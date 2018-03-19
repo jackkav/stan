@@ -136,3 +136,18 @@ const averages = (size, arr) => {
   const zeros = arr.filter(x => x === 0).length / size
   return [+postive.toFixed(6), +negative.toFixed(6), +zeros.toFixed(6)]
 }
+
+test('staircase', () => {
+  const e = `     #\n    ##\n   ###\n  ####\n #####\n######`
+  expect(staircase(1)).toEqual('#')
+  expect(staircase(2)).toEqual(' #\n##')
+  expect(staircase(3)).toEqual('  #\n ##\n###')
+  expect(staircase(6)).toEqual(e)
+})
+const f = (n, c) => Array(n).fill(c).join``
+function staircase(n) {
+  const y = Array(n)
+    .fill('1')
+    .map((x, i) => `${f(n - i - 1, ' ') + f(i + 1, '#')}\n`)
+  return y.join``.slice(0, -1)
+}
