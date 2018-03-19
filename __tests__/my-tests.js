@@ -17,6 +17,22 @@ test('arrays are implemented as objects, thus also a thing', () => {
   expect([]).toBeTruthy()
 })
 
+test('arrays have tricks for selecting the beginning or end', () => {
+  const a = [1, 2, 3, 4, 5, 6]
+  const [f, , , , , l] = a
+  expect(f).toEqual(1)
+  expect(l).toEqual(6)
+
+  const [first, second, third, ...rest] = a
+  expect(first).toEqual(1)
+  expect(second).toEqual(2)
+  expect(third).toEqual(3)
+  expect(rest).toEqual([4, 5, 6])
+
+  const {[a.length - 1]: last} = a
+  expect(last).toEqual(6)
+})
+
 test('arrays can be wierd', () => {
   let arr = Array(2).fill([0, 0])
   arr[1][1] = 1
@@ -96,10 +112,6 @@ test('number from morse code', () => {
 const morseToNumber = m => {
   const lookup = '▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄ ▄ ▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄'
   const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-  // return numbers.reduce((c, x) => {
-  //   if (lookup.slice(10 - x, 15 - x).join` ` === m) return x
-  //   return 0 + c
-  // })
   let r = 0
   numbers.forEach(x => {
     const n = lookup.split` `.slice(10 - x, 15 - x)
@@ -150,4 +162,35 @@ function staircase(n) {
     .fill('1')
     .map((x, i) => `${f(n - i - 1, ' ') + f(i + 1, '#')}\n`)
   return y.join``.slice(0, -1)
+}
+
+test('minMax', () => {
+  expect(minMax('1 2 3 4 5')).toEqual('10 14')
+  expect(minMax('5 5 5 5 5')).toEqual('20 20')
+})
+
+const minMax = s => {
+  const arr = s.split(' ')
+  const totals = arr.map(x => {
+    const filter = arr.filter(y => y !== x)
+    if (!filter.length) return arr.slice(1).reduce((c, a) => +a + +c)
+    return filter.reduce((c, a) => +a + +c)
+  })
+  return `${Math.min(...totals)} ${Math.max(...totals)}`
+}
+
+test('minMax unfairness', () => {
+  expect(minMaxUnfair([7, 2, 1, 4, 7, 2])).toEqual(1)
+  expect(minMaxUnfair([7, 3, 10, 100, 300, 200, 1000, 20, 30])).toEqual(20)
+  expect(minMaxUnfair([10, 4, 1, 2, 3, 4, 10, 20, 30, 40, 100, 200])).toEqual(3)
+  // expect(minMaxUnfair(minMaxUnfairTestData.split``.filter(x => x))).toEqual(89733159)
+})
+
+const minMaxUnfair = s => {
+  const [n, k, ...arr] = s
+  const two = arr
+    .sort((a, b) => b - a)
+    .reverse()
+    .slice(0, k)
+  return Math.max(...two) - Math.min(...two)
 }
