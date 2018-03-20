@@ -7,6 +7,9 @@ const compress = uncompressed => {
   let w = ''
   let result = []
   let dictSize = 256
+  // Array(256)
+  //   .fill()
+  //   .forEach((e, i) => (dictionary[String.fromCharCode(i)] = i))
   for (i = 0; i < 256; i += 1) {
     dictionary[String.fromCharCode(i)] = i
   }
@@ -31,6 +34,29 @@ const compress = uncompressed => {
   if (w !== '') {
     result.push(dictionary[w])
   }
+  return result
+}
+const compressGolfed = uncompressed => {
+  let i, c, wc
+  let dictionary = {}
+
+  let w = ''
+  let result = []
+  let dictSize = 256
+  for (i = 0; i < 256; i++) dictionary[String.fromCharCode(i)] = i
+
+  for (i = 0; i < uncompressed.length; i++) {
+    c = uncompressed.charAt(i)
+    wc = w + c
+    if (dictionary.hasOwnProperty(wc)) w = wc
+    else {
+      result.push(dictionary[w])
+      dictionary[wc] = dictSize++
+      w = c
+    }
+  }
+
+  if (w !== '') result.push(dictionary[w])
   return result
 }
 const decompress = compressed => {
@@ -70,5 +96,5 @@ const decompress = compressed => {
   return result
 }
 
-module.exports.compress = compress
+module.exports.compress = compressGolfed
 module.exports.decompress = decompress

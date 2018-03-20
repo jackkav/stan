@@ -16,10 +16,12 @@ const expected = `ᦡ桃x惌Ԁጠ泶ᨠ狠登ཱྀ兂⑆࿎淀ïഢ憆ᄽㄉ婑៏
 // })
 
 test('8bit compress', () => {
+  expect(compress('jackkav')).toEqual([106, 97, 99, 107, 107, 97, 118])
   expect(compress(pi)).toEqual(c)
 })
 test('8bit decompress', () => {
   const c = compress(pi)
+  expect(decompress([106, 97, 99, 107, 107, 97, 118])).toEqual('jackkav')
   expect(decompress(c)).toEqual(pi)
 })
 
