@@ -36,28 +36,25 @@ const compress = uncompressed => {
   }
   return result
 }
-const compressGolfed = uncompressed => {
+const compressGolfed = u => {
   let i, c, wc
-  let dictionary = {}
-
+  let d = {}
   let w = ''
-  let result = []
-  let dictSize = 256
-  for (i = 0; i < 256; i++) dictionary[String.fromCharCode(i)] = i
-
-  for (i = 0; i < uncompressed.length; i++) {
-    c = uncompressed.charAt(i)
+  let r = []
+  let s = 256
+  for (i = 0; i < s; i++) d[String.fromCharCode(i)] = i
+  for (i = 0; i < u.length; i++) {
+    c = u.charAt(i)
     wc = w + c
-    if (dictionary.hasOwnProperty(wc)) w = wc
+    if (d.hasOwnProperty(wc)) w = wc
     else {
-      result.push(dictionary[w])
-      dictionary[wc] = dictSize++
+      r.push(d[w])
+      d[wc] = s++
       w = c
     }
   }
-
-  if (w !== '') result.push(dictionary[w])
-  return result
+  if (w !== '') r.push(d[w])
+  return r
 }
 const decompress = compressed => {
   // Build the dictionary.
