@@ -7,8 +7,8 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
   let dictionary = {}
   let dictionaryToCreate = {}
 
-  let wc = ''
-  let w = ''
+  let characterPair = ''
+  let prevCharacter = ''
   let enlargeIn = 2 // Compensate for the first entry which should not count
   let dictSize = 3
   let numBits = 2
@@ -22,53 +22,40 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
   // 4. Add W followed by the next symbol in the input to the dictionary.
   // 5. Go to Step 2.
 
-  const reset = value => {
-    data.push(getCharFromInt(value))
-    position = 0
-    value = 0
-  }
   const doTheThingAndShiftMarker = () => {
-    doTheMainThing(mergeBits(shiftBitRight(value), isOdd(marker)))
+    updateAndPush(mergeBits(shiftBitRight(value), isOdd(marker)))
     marker = shiftBitLeft(marker)
   }
   const doTheThingAndShiftCounter = () => {
-    doTheMainThing(mergeBits(shiftBitRight(value), isOdd(counter)))
+    updateAndPush(mergeBits(shiftBitRight(value), isOdd(counter)))
     counter = shiftBitLeft(counter)
   }
   const doTheThingAndResetCounter = () => {
-    doTheMainThing(mergeBits(shiftBitRight(value), counter))
+    updateAndPush(mergeBits(shiftBitRight(value), counter))
     counter = 0
   }
   const doTheThingAndResetMarker = () => {
-    doTheMainThing(mergeBits(shiftBitRight(value), isOdd(marker)))
+    updateAndPush(mergeBits(shiftBitRight(value), isOdd(marker)))
     marker = 0
   }
-  const doTheStrangerThing = () => {
-    value = mergeBits(shiftBitRight(value), isOdd(counter))
-    if (position === bitsPerChar - 1) {
-      data.push(getCharFromInt(value))
-      position = 0
-      value = 0
-    } else {
-      position++
-    }
-    counter = shiftBitLeft(counter)
+  const do8BitStuff = p => {
+    Array(numBits)
+      .fill()
+      .forEach(() => updateAndPush(shiftBitRight(value)))
+    counter = p.charCodeAt(0)
+    Array(8)
+      .fill()
+      .forEach(() => doTheThingAndShiftCounter())
   }
-  const doTheStrangerThingAgain = () => {
-    value = mergeBits(shiftBitRight(value), isOdd(counter))
-    if (position === bitsPerChar - 1) {
-      position = 0
-      data.push(getCharFromInt(value))
-      value = 0
-    } else {
-      position++
-    }
-    counter = shiftBitLeft(counter)
-  }
-  const doTheMainThing = v => {
+  const updateAndPush = v => {
     value = v
-    if (position === bitsPerChar - 1) reset(value)
-    else position++
+    if (position === bitsPerChar - 1) {
+      position = 0
+      data.push(getCharFromInt(value))
+      value = 0
+    } else {
+      position++
+    }
   }
   const engourge = () => {
     enlargeIn--
@@ -77,116 +64,100 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
       numBits++
     }
   }
-  const is8Bit = c => c.charCodeAt(0) < 256
+  const setMarker = m => {
+    marker = m
+    Array(numBits)
+      .fill()
+      .forEach(() => doTheThingAndShiftMarker())
+  }
+  const setCounter = m => {
+    counter = m
+    Array(numBits)
+      .fill()
+      .forEach(() => doTheThingAndShiftCounter())
+  }
+  const flush = () => {
+    while (true) {
+      value = shiftBitRight(value)
+      if (position === bitsPerChar - 1) {
+        data.push(getCharFromInt(value))
+        break
+      } else position++
+    }
+  }
 
   const eachCharacter = [...uncompressed]
-  eachCharacter.forEach(c => {
-    if (!has(dictionary, c)) {
-      dictionary[c] = dictSize++
-      dictionaryToCreate[c] = true
+  eachCharacter.forEach(nextCharacter => {
+    // when nextCharacter isnt in dictionary prepare two dictionary elements
+    if (!has(dictionary, nextCharacter)) {
+      dictionary[nextCharacter] = dictSize++
+      dictionaryToCreate[nextCharacter] = true
     }
-    wc = w + c
-    if (has(dictionary, wc)) {
-      w = wc
-    } else {
-      if (has(dictionaryToCreate, w)) {
-        if (is8Bit(w)) {
-          Array(numBits)
-            .fill()
-            .forEach(() => doTheMainThing(shiftBitRight(value)))
 
-          counter = w.charCodeAt(0)
-          Array(8)
-            .fill()
-            .forEach(() => doTheStrangerThing())
-        } else {
-          counter = 1
-          Array(numBits)
-            .fill()
-            .forEach(() => doTheThingAndResetCounter())
-
-          counter = w.charCodeAt(0)
-
-          Array(16)
-            .fill()
-            .forEach(() => doTheStrangerThingAgain())
-        }
-        engourge()
-        delete dictionaryToCreate[w]
-      } else {
-        counter = dictionary[w]
-        for (let i = 0; i < numBits; i++) {
-          value = mergeBits(shiftBitRight(value), isOdd(counter))
-          if (position === bitsPerChar - 1) {
-            position = 0
-            data.push(getCharFromInt(value))
-            value = 0
-          } else {
-            position++
-          }
-          counter = shiftBitLeft(counter)
-        }
-      }
-      engourge()
-      // Add wc to the dictionary.
-      dictionary[wc] = dictSize++
-      w = c
+    characterPair = prevCharacter + nextCharacter
+    if (has(dictionary, characterPair)) {
+      prevCharacter = characterPair
+      return
     }
-  })
-
-  // Output the code for w.
-  if (w) {
-    if (!has(dictionaryToCreate, w)) {
-      marker = dictionary[w]
-      Array(numBits)
-        .fill()
-        .forEach(() => doTheThingAndShiftMarker())
-    } else {
-      if (is8Bit(w)) {
+    // when prevCharacter isnt in dictionaryToCreate set counter to dictionary element
+    if (!has(dictionaryToCreate, prevCharacter)) setCounter(dictionary[prevCharacter])
+    else {
+      if (is8Bit(prevCharacter)) do8BitStuff(prevCharacter)
+      else {
+        counter = 1
         Array(numBits)
           .fill()
-          .forEach(() => doTheMainThing(shiftBitRight(value)))
-        counter = w.charCodeAt(0)
-        Array(8)
+          .forEach(() => doTheThingAndResetCounter())
+        counter = prevCharacter.charCodeAt(0)
+        Array(16)
           .fill()
           .forEach(() => doTheThingAndShiftCounter())
-      } else {
+      }
+      engourge()
+      delete dictionaryToCreate[prevCharacter]
+    }
+    engourge()
+    // Add characterPair to the dictionary.
+    dictionary[characterPair] = dictSize++
+    prevCharacter = nextCharacter
+  })
+
+  // Output the code for prevCharacter.
+  if (prevCharacter) {
+    if (!has(dictionaryToCreate, prevCharacter)) {
+      setMarker(dictionary[prevCharacter])
+    } else {
+      if (is8Bit(prevCharacter)) do8BitStuff(prevCharacter)
+      else {
+        // test not hitting here
         counter = 1
         Array(numBits)
           .fill()
           .forEach(() => doTheThingAndResetMarker())
-
-        marker = w.charCodeAt(0)
-
+        marker = prevCharacter.charCodeAt(0)
         Array(16)
           .fill()
           .forEach(() => doTheThingAndShiftMarker())
       }
       engourge()
-      delete dictionaryToCreate[w]
+      delete dictionaryToCreate[prevCharacter]
     }
     engourge()
   }
 
   // Mark the end of the stream
-  marker = 2
-  Array(numBits)
-    .fill()
-    .forEach(() => doTheThingAndShiftMarker())
+  setMarker(2)
 
   // Flush the last char
-  while (true) {
-    value = shiftBitRight(value)
-    if (position === bitsPerChar - 1) {
-      data.push(getCharFromInt(value))
-      break
-    } else position++
-  }
+  flush()
   return data.join``
 }
+
 const has = (x, y) => Object.prototype.hasOwnProperty.call(x, y)
 const isOdd = n => n & 1
 const shiftBitRight = n => n << 1
 const shiftBitLeft = n => n >> 1
 const mergeBits = (n, m) => n | m
+const is8Bit = c => c.charCodeAt(0) < 256
+
 module.exports.compress = compress
