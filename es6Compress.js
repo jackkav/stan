@@ -40,6 +40,14 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
     if (position === bitsPerChar - 1) reset(value)
     else position++
   }
+  const engourge = () => {
+    enlargeIn--
+    if (enlargeIn === 0) {
+      enlargeIn = Math.pow(2, numBits)
+      numBits++
+    }
+  }
+
   const eachCharacter = [...uncompressed]
   eachCharacter.forEach(c => {
     if (!has(dictionary, c)) {
@@ -53,9 +61,9 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
     }
     if (has(dictionaryToCreate, w)) {
       if (is8Bit(w)) {
-        for (let i = 0; i < numBits; i++) {
-          doTheOtherThing(shiftBitRight(value))
-        }
+        Array(numBits)
+          .fill()
+          .forEach(() => doTheOtherThing(shiftBitRight(value)))
         a = w.charCodeAt(0)
         for (let i = 0; i < EightBit; i++) {
           value = mergeBits(shiftBitRight(value), isOdd(a))
@@ -67,18 +75,20 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
           }
           a = shiftBitLeft(a)
         }
-      } else {
-        a = 1
-        for (let i = 0; i < numBits; i++) {
-          doTheOtherThing(mergeBits(shiftBitRight(value), a))
-          a = 0
-        }
-        a = w.charCodeAt(0)
-        for (let i = 0; i < SixteenBit; i++) {
-          doTheOtherThing(mergeBits(shiftBitRight(value), isOdd(a)))
-          a = shiftBitLeft(a)
-        }
       }
+      // else {
+      //   a = 1
+
+      //   for (let i = 0; i < numBits; i++) {
+      //     doTheOtherThing(mergeBits(shiftBitRight(value), a))
+      //     a = 0
+      //   }
+      //   a = w.charCodeAt(0)
+      //   for (let i = 0; i < SixteenBit; i++) {
+      //     doTheOtherThing(mergeBits(shiftBitRight(value), isOdd(a)))
+      //     a = shiftBitLeft(a)
+      //   }
+      // }
       enlargeIn--
       if (enlargeIn === 0) {
         enlargeIn = Math.pow(2, numBits)
@@ -112,51 +122,45 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
   if (w) {
     if (has(dictionaryToCreate, w)) {
       if (is8Bit(w)) {
-        for (let i = 0; i < numBits; i++) {
-          doTheOtherThing(shiftBitRight(value))
-        }
+        Array(numBits)
+          .fill()
+          .forEach(() => doTheOtherThing(shiftBitRight(value)))
+
         a = w.charCodeAt(0)
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < EightBit; i++) {
           value = mergeBits(shiftBitRight(value), isOdd(a))
           if (position === bitsPerChar - 1) reset(value)
           else position++
           a = shiftBitLeft(a)
         }
-      } else {
-        a = 1
-        for (let i = 0; i < numBits; i++) {
-          doTheOtherThing(mergeBits(shiftBitRight(value), a))
-          marker = 0
-        }
-        marker = w.charCodeAt(0)
-        for (let i = 0; i < 16; i++) {
-          doTheThing()
-        }
       }
-      enlargeIn--
-      if (enlargeIn === 0) {
-        enlargeIn = Math.pow(2, numBits)
-        numBits++
-      }
+      // else {
+      //   a = 1
+      //   for (let i = 0; i < numBits; i++) {
+      //     doTheOtherThing(mergeBits(shiftBitRight(value), a))
+      //     marker = 0
+      //   }
+      //   marker = w.charCodeAt(0)
+      //   for (let i = 0; i < SixteenBits; i++) {
+      //     doTheThing()
+      //   }
+      // }
+      engourge()
       delete dictionaryToCreate[w]
     } else {
       marker = dictionary[w]
-      for (let i = 0; i < numBits; i++) {
-        doTheThing()
-      }
+      Array(numBits)
+        .fill()
+        .forEach(() => doTheThing())
     }
-    enlargeIn--
-    if (enlargeIn === 0) {
-      enlargeIn = Math.pow(2, numBits)
-      numBits++
-    }
+    engourge()
   }
 
   // Mark the end of the stream
   marker = 2
-  for (let i = 0; i < numBits; i++) {
-    doTheThing()
-  }
+  Array(numBits)
+    .fill()
+    .forEach(() => doTheThing())
 
   // Flush the last char
   while (true) {

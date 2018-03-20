@@ -5,6 +5,9 @@ const expected = `ᦡ桃x惌Ԁጠ泶ᨠ狠登ཱྀ兂⑆࿎淀ïഢ憆ᄽㄉ婑៏
 test('compress', () => {
   expect(LZString.compressToUTF16(pi).length).toEqual(expected.length)
   expect(LZString.compressToUTF16(pi)).toEqual(expected)
+  expect(LZString.compressToUTF16('jackkav')).toEqual('ૢ౑䇌ሦ爠 ')
+  expect(LZString.compressToUTF16('ǴǴǴǴǴǵǵǵǵ')).toEqual('䘐ʅ㸠Ⲡ ')
+  expect(LZString.compressToUTF16('你好你好你好你好你好你好你好你好')).toEqual('䃾⦝᫝剈 ')
 })
 
 test('decompress', () => {
