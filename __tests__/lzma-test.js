@@ -1,25 +1,26 @@
 const LZString = require('../LZString')
 const {compressUTF16} = require('../es6Compress')
+const {compress, decompress} = require('../compress')
 const pi = `3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132823066470938446095505822317253594081284811174502841027019385211055596446229489549303819644288109756659334461284756482337867831652712019091456485669234603486104543266482133936072602491412737245870066063155881748815209209628292540917153643678925903600113305305488204665213841469519415116094330572703657595919530921861173819326117931051185480744623799627495673518857527248912279381830119491298336733624406566430860213949463952247371907021798609437027705392171762931767523846748184676694051320005681271452635608277857713427577896091736371787214684409012249534301465495853710507922796892589235420199561121290219608640344181598136297747713099605187072113499999983729780499510597317328160963185950244594553469083026425223082533446850352619311881710100031378387528865875332083814206171776691473035982534904287554687311595628638823537875937519577818577805321712268066130019278766111959092164201989`
 const expected = `ᦡ桃x惌Ԁጠ泶ᨠ狠登ཱྀ兂⑆࿎淀ïഢ憆ᄽㄉ婑៏ዌዡȼṪ䲉ూ⤳≉↶ᩭ▀ࢉ灰⏣̩䥛ᖄ᩹撁㥷ɬ₣厠傯㑊⺙嫶吕䬣⋋㮀畚樽㵞ᨳ⇠玤娳戁簸桞㧞Ẫ፦ሃ㉃႑䪤伢♪伸ੈ䔶ɒ䍑Ẵ稾⑔ይࣴ揣孋⑙Ʉ⑆曉ܱɄ䛃牢㵐☐䅔ລ剢儋☖⺤秙ひ壕ӌ᭦఩㑝ࡁ悴䏕᎓ੇյ⥨♧痲ঁ洜ᡍᄟᒳ䦯ǲ໰ᬭ珹弆Ȭԋ㓩ษ˳〵✫⚈呂¨䅈塤☯䒊✌ⴸો☸➠৑∆ᚿ䏺抈⤬咇☲㈫ᅁ೴শ䱃౪慉橚⚯✘䡂昧Ⅲ⇵☨䇣㒅⡿т熂Ĭ勫崌⸲䟶᪂A剢偣⪪⺉╆ڭ䓖㜕⓱ȶ䔟␱א磕Üइ崩᯹制㡂Ȣ䤖丸ḡᜃ梏∫⓲扼䏚₲牰䰾⅐ᕲ喺傤ᶤ亭槔夅粪㋢ಜ᯼ዠ⪳റ䈃ᵰ尪䆅悢㪩䖳䳤᪦ᝒ呈⹣櫂儐拊ଳ⫕㻉⅓䫓⡶䙢埄㜡䬰㒲㻪⻶₳ኮԿᓐϦ䎀ሾ擫ℍ⓮洺᥊埌㯸ള家朷߸戯ↀ䲝⽠Ź䖰籰⻓䑸潂恀  `
-test('compress', () => {
-  expect(LZString.compressToUTF16(pi).length).toEqual(expected.length)
-  expect(LZString.compressToUTF16(pi)).toEqual(expected)
-  expect(LZString.compressToUTF16('jackkav')).toEqual('ૢ౑䇌ሦ爠 ')
-  expect(LZString.compressToUTF16('ǴǴǴǴǴǵǵǵǵ')).toEqual('䘐ʅ㸠Ⲡ ')
-  expect(LZString.compressToUTF16('你好你好你好你好你好你好你好你好')).toEqual('䃾⦝᫝剈 ')
+// test('16bit compress', () => {
+//   expect(compressUTF16(pi).length).toEqual(expected.length)
+//   expect(compressUTF16(pi)).toEqual(expected)
+//   expect(compressUTF16('jackkav')).toEqual('ૢ౑䇌ሦ爠 ')
+//   expect(compressUTF16('ǴǴǴǴǴǵǵǵǵ')).toEqual('䘐ʅ㸠Ⲡ ')
+//   expect(compressUTF16('你好你好你好你好你好你好你好你好')).toEqual('䃾⦝᫝剈 ')
+// })
+
+// test('16bit decompress', () => {
+//   expect(LZString.decompressFromUTF16(expected)).toEqual(pi)
+// })
+
+test('8bit compress', () => {
+  expect(compress(pi)).toEqual(c)
+})
+test('8bit decompress', () => {
+  const c = compress(pi)
+  expect(decompress(c)).toEqual(pi)
 })
 
-test('decompress', () => {
-  expect(LZString.decompressFromUTF16(expected)).toEqual(pi)
-})
-
-test('golfed compress', () => {
-  expect(compressUTF16(pi)).toEqual(expected)
-})
-
-test('golfed compress', () => {
-  const e = ` `
-  const r = `¨ `
-  expect(compressUTF16(e)).toEqual(r)
-})
+const c = compress(pi)
