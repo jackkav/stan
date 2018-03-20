@@ -1,10 +1,10 @@
-const compress = input => _compress(input, 15, a => f(a + 32)) + ' '
+const compressUTF16 = input => _compress(input, 15, a => f(a + 32)) + ' '
+
 const f = String.fromCharCode
 const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
   if (uncompressed === null) return ''
 
-  let a
-  let marker
+  let a, marker
   let dictionary = {}
   let dictionaryToCreate = {}
 
@@ -16,13 +16,30 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
   let data = []
   let value = 0
   let position = 0
+  let EightBit = 8
+  let SixteenBit = 16
 
   // 1. Initialize the dictionary to contain all strings of length one.
   // 2. Find the longest string W in the dictionary that matches the current input.
   // 3. Emit the dictionary index for W to output and remove W from the input.
   // 4. Add W followed by the next symbol in the input to the dictionary.
   // 5. Go to Step 2.
-
+  const reset = value => {
+    data.push(getCharFromInt(value))
+    position = 0
+    value = 0
+  }
+  const doTheThing = () => {
+    value = mergeBits(shiftBitRight(value), isOdd(marker))
+    if (position === bitsPerChar - 1) reset(value)
+    else position++
+    marker = shiftBitLeft(marker)
+  }
+  const doTheOtherThing = v => {
+    value = v
+    if (position === bitsPerChar - 1) reset(value)
+    else position++
+  }
   const eachCharacter = [...uncompressed]
   eachCharacter.forEach(c => {
     if (!has(dictionary, c)) {
@@ -32,75 +49,34 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
     wc = w + c
     if (has(dictionary, wc)) {
       w = wc
-    } else {
-      if (has(dictionaryToCreate, w)) {
-        if (w.charCodeAt(0) < 256) {
-          for (let i = 0; i < numBits; i++) {
-            value = value << 1
-            if (position === bitsPerChar - 1) {
-              position = 0
-              data.push(getCharFromInt(value))
-              value = 0
-            } else {
-              position++
-            }
-          }
-          a = w.charCodeAt(0)
-          for (let i = 0; i < 8; i++) {
-            value = (value << 1) | isOdd(a)
-            if (position === bitsPerChar - 1) {
-              position = 0
-              data.push(getCharFromInt(value))
-              value = 0
-            } else {
-              position++
-            }
-            a = a >> 1
-          }
-        } else {
-          a = 1
-          for (let i = 0; i < numBits; i++) {
-            value = (value << 1) | a
-            if (position === bitsPerChar - 1) {
-              position = 0
-              data.push(getCharFromInt(value))
-              value = 0
-            } else {
-              position++
-            }
-            a = 0
-          }
-          a = w.charCodeAt(0)
-          for (let i = 0; i < 16; i++) {
-            value = (value << 1) | isOdd(a)
-            if (position === bitsPerChar - 1) {
-              position = 0
-              data.push(getCharFromInt(value))
-              value = 0
-            } else {
-              position++
-            }
-            a = a >> 1
-          }
-        }
-        enlargeIn--
-        if (enlargeIn === 0) {
-          enlargeIn = Math.pow(2, numBits)
-          numBits++
-        }
-        delete dictionaryToCreate[w]
-      } else {
-        a = dictionary[w]
+      return
+    }
+    if (has(dictionaryToCreate, w)) {
+      if (is8Bit(w)) {
         for (let i = 0; i < numBits; i++) {
-          value = (value << 1) | isOdd(a)
-          if (position === bitsPerChar - 1) {
-            position = 0
+          doTheOtherThing(shiftBitRight(value))
+        }
+        a = w.charCodeAt(0)
+        for (let i = 0; i < EightBit; i++) {
+          value = mergeBits(shiftBitRight(value), isOdd(a))
+          if (position !== bitsPerChar - 1) position++
+          else {
             data.push(getCharFromInt(value))
+            position = 0
             value = 0
-          } else {
-            position++
           }
-          a = a >> 1
+          a = shiftBitLeft(a)
+        }
+      } else {
+        a = 1
+        for (let i = 0; i < numBits; i++) {
+          doTheOtherThing(mergeBits(shiftBitRight(value), a))
+          a = 0
+        }
+        a = w.charCodeAt(0)
+        for (let i = 0; i < SixteenBit; i++) {
+          doTheOtherThing(mergeBits(shiftBitRight(value), isOdd(a)))
+          a = shiftBitLeft(a)
         }
       }
       enlargeIn--
@@ -108,62 +84,53 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
         enlargeIn = Math.pow(2, numBits)
         numBits++
       }
-      // Add wc to the dictionary.
-      dictionary[wc] = dictSize++
-      w = String(c)
+      delete dictionaryToCreate[w]
+    } else {
+      a = dictionary[w]
+      for (let i = 0; i < numBits; i++) {
+        value = mergeBits(shiftBitRight(value), isOdd(a))
+        if (position !== bitsPerChar - 1) position++
+        else {
+          data.push(getCharFromInt(value))
+          position = 0
+          value = 0
+        }
+        a = shiftBitLeft(a)
+      }
     }
+    enlargeIn--
+    if (enlargeIn === 0) {
+      enlargeIn = Math.pow(2, numBits)
+      numBits++
+    }
+    // Add wc to the dictionary.
+    dictionary[wc] = dictSize++
+    w = c
   })
 
   // Output the code for w.
   if (w) {
     if (has(dictionaryToCreate, w)) {
-      if (w.charCodeAt(0) < 256) {
+      if (is8Bit(w)) {
         for (let i = 0; i < numBits; i++) {
-          value = value << 1
-          if (position === bitsPerChar - 1) {
-            position = 0
-            data.push(getCharFromInt(value))
-            value = 0
-          } else {
-            position++
-          }
+          doTheOtherThing(shiftBitRight(value))
         }
         a = w.charCodeAt(0)
         for (let i = 0; i < 8; i++) {
-          value = (value << 1) | isOdd(a)
-          if (position === bitsPerChar - 1) {
-            position = 0
-            data.push(getCharFromInt(value))
-            value = 0
-          } else {
-            position++
-          }
-          a = a >> 1
+          value = mergeBits(shiftBitRight(value), isOdd(a))
+          if (position === bitsPerChar - 1) reset(value)
+          else position++
+          a = shiftBitLeft(a)
         }
       } else {
         a = 1
         for (let i = 0; i < numBits; i++) {
-          value = (value << 1) | a
-          if (position === bitsPerChar - 1) {
-            position = 0
-            data.push(getCharFromInt(value))
-            value = 0
-          } else {
-            position++
-          }
+          doTheOtherThing(mergeBits(shiftBitRight(value), a))
           marker = 0
         }
         marker = w.charCodeAt(0)
         for (let i = 0; i < 16; i++) {
-          value = (value << 1) | (marker & 1)
-          if (position === bitsPerChar - 1) {
-            position = 0
-            data.push(getCharFromInt(value))
-            value = 0
-          } else {
-            position++
-          }
-          marker = marker >> 1
+          doTheThing()
         }
       }
       enlargeIn--
@@ -175,15 +142,7 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
     } else {
       marker = dictionary[w]
       for (let i = 0; i < numBits; i++) {
-        value = (value << 1) | (marker & 1)
-        if (position === bitsPerChar - 1) {
-          position = 0
-          data.push(getCharFromInt(value))
-          value = 0
-        } else {
-          position++
-        }
-        marker = marker >> 1
+        doTheThing()
       }
     }
     enlargeIn--
@@ -196,27 +155,24 @@ const _compress = (uncompressed, bitsPerChar, getCharFromInt) => {
   // Mark the end of the stream
   marker = 2
   for (let i = 0; i < numBits; i++) {
-    value = (value << 1) | (marker & 1)
-    if (position === bitsPerChar - 1) {
-      position = 0
-      data.push(getCharFromInt(value))
-      value = 0
-    } else {
-      position++
-    }
-    marker = marker >> 1
+    doTheThing()
   }
 
   // Flush the last char
   while (true) {
-    value = value << 1
-    if (position === bitsPerChar - 1) {
+    value = shiftBitRight(value)
+    if (position !== bitsPerChar - 1) position++
+    else {
       data.push(getCharFromInt(value))
       break
-    } else position++
+    }
   }
   return data.join``
 }
 const has = (x, y) => Object.prototype.hasOwnProperty.call(x, y)
 const isOdd = n => n & 1
-module.exports.compress = compress
+const shiftBitRight = n => n << 1
+const shiftBitLeft = n => n >> 1
+const mergeBits = (n, m) => n | m
+const is8Bit = c => c.charCodeAt(0) < 256
+module.exports.compressUTF16 = compressUTF16

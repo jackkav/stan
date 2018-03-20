@@ -3,6 +3,10 @@
 // 1100 & 1111 = 1100
 // 1100 | 1111 = 1111
 // 1100 ^ 1111 = 0011
+// 1100 >> 1 = 110
+// 1100 >> 2 = 11
+// 1100 << 1 = 11000
+// 1100 << 2 = 110000
 
 // AND &
 // similar to % 2 in outcome
@@ -45,3 +49,25 @@ const rgb = hex => parseInt(hex, 16)
 const red = hex => (rgb(hex) >> 16) & 0xff // returns 255
 const green = hex => (rgb(hex) >> 8) & 0xff // 170
 const blue = hex => rgb(hex) & 0xff // 221
+
+// shift bits
+test('shift bits', () => {
+  const n = 12 // 1100
+  const el = 6 // 110
+  const er = 24 // 11000
+  expect(shiftBitLeft(n)).toEqual(el)
+  expect(shiftBitRight(n)).toEqual(er)
+})
+
+const shiftBitLeft = n => n >> 1
+const shiftBitRight = n => n << 1
+
+// merge bits
+test('merge bits', () => {
+  const n = 12 // 1100
+  const m = 3 // 0011
+  const e = 15 // 1111
+  expect(mergeBits(n, m)).toEqual(e)
+})
+
+const mergeBits = (n, m) => n | m
