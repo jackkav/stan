@@ -30,6 +30,7 @@ test('arrays have tricks for selecting the beginning or end', () => {
   expect(rest).toEqual([4, 5, 6])
 
   const {[a.length - 1]: last} = a
+  const {a: fred} = {a: 1, b: 2}
   expect(last).toEqual(6)
 })
 

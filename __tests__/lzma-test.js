@@ -22,12 +22,10 @@ test('golfed compress', () => {
 })
 
 test('8bit compress', () => {
+  const c = compress(pi)
   expect(compress(pi)).toEqual(c)
 })
 test('8bit decompress', () => {
   const c = compress(pi)
   expect(decompress(c)).toEqual(pi)
-
-
-
-const c = compress(pi)
+})
