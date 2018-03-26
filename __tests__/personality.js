@@ -11,6 +11,7 @@ const getDimension = d => {
   const b = a / 60
   return Math.round(b * 100)
 }
+const flip = x => (x === 1 ? 5 : x === 2 ? 4 : x === 4 ? 2 : x === 5 ? 1 : 3)
 const q = [
   {q: 'I am the life of the party.', s: '(1+)', r: 5},
   {q: 'Feel little concern for others.', s: '(2-)', r: 3},
