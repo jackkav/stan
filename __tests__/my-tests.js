@@ -112,7 +112,7 @@ test('number from morse code', () => {
 
 const morseToNumber = m => {
   const lookup = '▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄ ▄ ▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄'
-  const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  const numbers = [...Array(10).keys()] // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
   let r = 0
   numbers.forEach(x => {
     const n = lookup.split` `.slice(10 - x, 15 - x)
@@ -195,3 +195,101 @@ const minMaxUnfair = s => {
     .slice(0, k)
   return Math.max(...two) - Math.min(...two)
 }
+
+const emirp = `13
+17
+31
+37
+71
+73
+79
+97
+107
+113
+149
+157
+167
+179
+199
+311
+337
+347
+359
+389
+701
+709
+733
+739
+743
+751
+761
+769
+907
+937
+941
+953
+967
+971
+983
+991`
+
+test('emirp numbers', () => {
+  expect(emirpNumbers().split`\n`.length).toEqual(emirp.split`\n`.length)
+  expect(emirpNumbers()).toEqual(emirp)
+})
+const emirpNumbers = () => {
+  p = n => {
+    for (j = 2, r = 1; j < n; ) !(n % j++) && (r = 0)
+    return r
+  }
+  x = n => {
+    return [...Array(999).keys()].filter(a => {
+      t = +[...(a + '')].reverse().join``
+      return a ^ t && p(a) && p(t)
+    })
+  }
+  return x().join`\n`
+  arr = []
+  for (a = 0; 999 > a; a++) {
+    t = +[...(a + '')].reverse().join``
+    if (a ^ t && p(a) && p(t)) arr.push(a)
+  }
+  return arr.join`\n`
+}
+
+test('prime numbers', () => {
+  expect(primeNumbers(6)).toEqual(false)
+  expect(primeNumbers(2)).toEqual(true)
+  expect(primeNumbers(3)).toEqual(true)
+})
+const primeNumbers = i => {
+  for (d = i - 1; d > 1; d--) {
+    if (!(i % d)) return false
+  }
+  return true
+}
+test('fib fast', () => {
+  expect(fibonacci(70)).toEqual(190392490709135)
+  expect(fibonacci(60)).toEqual(1548008755920)
+  expect(fibonacci(50)).toEqual(12586269025)
+})
+const memoize = passedFunc => {
+  var cache = {}
+  return x => {
+    if (x in cache) return cache[x]
+    return (cache[x] = passedFunc(x))
+  }
+}
+const fibonacci = memoize(n => {
+  if (n == 0 || n == 1) return n
+  return fibonacci(n - 1) + fibonacci(n - 2)
+})
+
+test('pad minutes', () => {
+  expect(pad(70)).toEqual('70')
+  expect(pad(0)).toEqual('00')
+  expect(pad(5)).toEqual('05')
+  expect(pad('75')).toEqual('75')
+  expect(pad('5')).toEqual('05')
+})
+const pad = x => (x < 10 ? '0' + x : x + '')
