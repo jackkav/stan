@@ -88,14 +88,21 @@ test('molecules', () => {
 })
 
 function parseMolecule(formula) {
-  const notation = {}
+  let notation = {}
   const molecules = formula.match(/[A-Z][a-z]?\d*|(?<!\([^)]*)\(.*\)\d+(?![^(]*\))/g)
+  console.log(molecules)
   molecules.forEach(x => {
-    if (x.includes('(')) {
+    t = {}
+    const hasBrackets = x[0] === '[' || x[0] === '('
+    const number = x.match(/\d/g)
+    const letters = x.replace(x.match(/\d/g), '')
+    if (!hasBrackets) t[letters] = +number || 1
+    else
       x.slice(1, -2).split``.forEach(y => {
-        notation[y] = +x[x.length - 1]
+        t[y] = +x[x.length - 1]
       })
-    } else notation[x.replace(x.match(/\d/g), '')] = +x.match(/\d/g) || 1
+
+    notation = {...notation, ...t}
   })
   return notation
 }
