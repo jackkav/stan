@@ -30,8 +30,11 @@ test('arrays have tricks for selecting the beginning or end', () => {
   expect(rest).toEqual([4, 5, 6])
 
   const {[a.length - 1]: last} = a
-  const {a: fred} = {a: 1, b: 2}
   expect(last).toEqual(6)
+
+  // all but last
+  const allBut = a.slice(0, -1)
+  expect(allBut).toEqual([1, 2, 3, 4, 5])
 })
 
 test('arrays can be wierd', () => {
@@ -271,7 +274,7 @@ const primeNumbers = i => {
 test('fib fast', () => {
   expect(fibonacci(70)).toEqual(190392490709135)
   expect(fibonacci(60)).toEqual(1548008755920)
-  expect(fibonacci(50)).toEqual(12586269025)
+  expect(fibonacci(40)).toEqual(102334155)
 })
 const memoize = passedFunc => {
   var cache = {}
@@ -293,3 +296,47 @@ test('pad minutes', () => {
   expect(pad('5')).toEqual('05')
 })
 const pad = x => (x < 10 ? '0' + x : x + '')
+
+test('seconds to duration', () => {
+  expect(formatDuration(0)).toEqual('now')
+  expect(formatDuration(1)).toEqual('1 second')
+  expect(formatDuration(5)).toEqual('5 seconds')
+  expect(formatDuration(62)).toEqual('1 minute and 2 seconds')
+  expect(formatDuration(120)).toEqual('2 minutes')
+  expect(formatDuration(3662)).toEqual('1 hour, 1 minute and 2 seconds')
+  expect(formatDuration(7777)).toEqual('2 hours, 9 minutes and 37 seconds')
+  expect(formatDuration(77777)).toEqual('21 hours, 36 minutes and 17 seconds')
+  expect(formatDuration(177777)).toEqual('2 days, 1 hour, 22 minutes and 57 seconds')
+  expect(formatDuration(77777777)).toEqual('2 years, 170 days, 4 hours, 56 minutes and 17 seconds')
+})
+
+const pl = (h, u) => (!h ? '' : `${h} ${u}${h > 1 ? 's' : ''}`)
+
+const formatDuration = seconds => {
+  if (!seconds) return 'now'
+  const r = {}
+  const s = {
+    year: 31536000,
+    // month: 2592000,
+    // week: 604800,
+    day: 86400,
+    hour: 3600,
+    minute: 60,
+    second: 1,
+  }
+  d = seconds
+  Object.keys(s).forEach(key => {
+    r[key] = Math.floor(d / s[key])
+    d -= r[key] * s[key]
+  })
+  const c = [
+    pl(r.year, 'year'),
+    pl(r.day, 'day'),
+    pl(r.hour, 'hour'),
+    pl(r.minute, 'minute'),
+    pl(r.second, 'second'),
+  ].filter(x => !!x)
+  return c.length === 1 ? c[0] : `${c.slice(0, -1).join`, `} and ${c[c.length - 1]}`
+}
+
+const readableList = c => (c.length === 1 ? c[0] : `${c.slice(0, -1).join`, `} and ${c[c.length - 1]}`)
