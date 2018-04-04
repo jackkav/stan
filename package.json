@@ -34,13 +34,23 @@
     "node": ">=4"
   },
   "eslintConfig": {
-    "extends": ["standard", "prettier", "plugin:jest/recommended"],
-    "plugins": ["prettier", "jest"],
+    "extends": [
+      "standard",
+      "prettier",
+      "plugin:jest/recommended"
+    ],
+    "plugins": [
+      "prettier",
+      "jest"
+    ],
     "rules": {
       "prettier/prettier": 2
     },
     "env": {
       "jest/globals": true
     }
+  },
+  "dependencies": {
+    "npm": "^5.8.0"
   }
 }

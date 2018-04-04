@@ -1,50 +1,3 @@
-test('truthy stuff', () => {
-  expect(1).toBeTruthy()
-  expect(' ').toBeTruthy()
-})
-
-test('falsy stuff', () => {
-  expect('').toBeFalsy()
-  expect(0).toBeFalsy()
-  expect(null).toBeFalsy()
-})
-
-test('objects are a thing even when empty', () => {
-  expect({}).toBeTruthy()
-})
-
-test('arrays are implemented as objects, thus also a thing', () => {
-  expect([]).toBeTruthy()
-})
-
-test('arrays have tricks for selecting the beginning or end', () => {
-  const a = [1, 2, 3, 4, 5, 6]
-  const [f, , , , , l] = a
-  expect(f).toEqual(1)
-  expect(l).toEqual(6)
-
-  const [first, second, third, ...rest] = a
-  expect(first).toEqual(1)
-  expect(second).toEqual(2)
-  expect(third).toEqual(3)
-  expect(rest).toEqual([4, 5, 6])
-
-  const {[a.length - 1]: last} = a
-  expect(last).toEqual(6)
-})
-
-test('arrays can be wierd', () => {
-  let arr = Array(2).fill([0, 0])
-  arr[1][1] = 1
-  expect(arr[1][1]).toBeTruthy()
-})
-
-test('who`s your NaN', () => {
-  expect(isNaN()).toBeTruthy()
-  expect(isNaN(NaN)).toBeTruthy()
-  expect(isNaN(9)).toBeFalsy()
-})
-
 test('sort numbers and that', () => {
   const input = [31415926535897932384626433832795, 0.1, 3, 10, 3, 5]
   const expected = [0.1, 3, 3, 5, 10, 31415926535897932384626433832795]
@@ -52,91 +5,7 @@ test('sort numbers and that', () => {
 })
 
 function bigSorting(arr) {
-  return arr.sort((a, b) => +b <= +a)
-}
-
-test('12 hour dates and that', () => {
-  expect(timeConversion('07:45:00PM')).toEqual('19:45:00')
-  expect(timeConversion('12:45:00PM')).toEqual('12:45:00')
-  expect(timeConversion('12:45:00AM')).toEqual('00:45:00')
-})
-
-function timeConversion(s) {
-  const midday = '12'
-  const midnight = '00'
-  const isAM = s[8] !== 'P'
-  const isTwelve = s.slice(0, 2) === '12'
-  const isMidday = !isAM && isTwelve
-  const isMidnight = isAM && isTwelve
-  const hours = +s.slice(0, 2)
-  const minutesAndSeconds = s.slice(2, 8)
-  if (isMidday) return midday + minutesAndSeconds
-  if (isMidnight) return midnight + minutesAndSeconds
-  return isAM ? s.slice(0, 8) : hours + 12 + minutesAndSeconds
-}
-
-const morse = `0  ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄
-1 	▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄
-2 	▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄
-3 	▄ ▄ ▄ ▄▄▄ ▄▄▄
-4 	▄ ▄ ▄ ▄ ▄▄▄
-5 	▄ ▄ ▄ ▄ ▄
-6 	▄▄▄ ▄ ▄ ▄ ▄
-7 	▄▄▄ ▄▄▄ ▄ ▄ ▄
-8 	▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄
-9 	▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄
-`
-test('morse code and that', () => {
-  // expect(numberToMorse(0)).toEqual('▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄')
-  // expect(numberToMorse(1)).toEqual('▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄')
-  // expect(numberToMorse(2)).toEqual('▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄')
-  // expect(numberToMorse(6)).toEqual('▄▄▄ ▄ ▄ ▄ ▄')
-  expect(numberToMorse(9)).toEqual('▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄')
-})
-
-const numberToMorse = n => {
-  const lookup = '▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄ ▄ ▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄'
-  const begin = 10 - n
-  const end = 15 - n
-  return lookup.split` `.slice(begin, end).join` `
-}
-
-test('number from morse code', () => {
-  expect(morseToNumber('▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄')).toEqual(0)
-  expect(morseToNumber('▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄')).toEqual(1)
-  expect(morseToNumber('▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄')).toEqual(2)
-  expect(morseToNumber('▄▄▄ ▄ ▄ ▄ ▄')).toEqual(6)
-  expect(morseToNumber('▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄')).toEqual(9)
-})
-
-const morseToNumber = m => {
-  const lookup = '▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄ ▄ ▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄'
-  const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-  let r = 0
-  numbers.forEach(x => {
-    const n = lookup.split` `.slice(10 - x, 15 - x)
-    if (n.join` ` === m) {
-      r = x
-    }
-  })
-  return r
-}
-
-const scriptArgs =
-  '▄▄▄   ▄ ▄ ▄ ▄   ▄          ▄ ▄ ▄ ▄▄▄ ▄▄▄   ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄   ▄▄▄ ▄▄▄ ▄ ▄ ▄   ▄▄▄ ▄ ▄ ▄ ▄   ▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄          ▄▄▄ ▄▄▄ ▄ ▄▄▄   ▄ ▄ ▄▄▄   ▄ ▄   ▄▄▄ ▄ ▄▄▄ ▄   ▄▄▄ ▄ ▄▄▄          ▄▄▄ ▄ ▄ ▄   ▄ ▄▄▄ ▄   ▄▄▄ ▄▄▄ ▄▄▄   ▄ ▄▄▄ ▄▄▄   ▄▄▄ ▄          ▄ ▄ ▄▄▄ ▄   ▄▄▄ ▄▄▄ ▄▄▄   ▄▄▄ ▄ ▄ ▄▄▄   ▄   ▄ ▄ ▄          ▄ ▄▄▄ ▄▄▄ ▄▄▄   ▄ ▄ ▄▄▄   ▄▄▄ ▄▄▄   ▄ ▄▄▄ ▄▄▄ ▄          ▄▄▄ ▄▄▄ ▄▄▄   ▄ ▄ ▄ ▄▄▄   ▄   ▄ ▄▄▄ ▄          ▄▄▄   ▄ ▄ ▄ ▄   ▄          ▄ ▄ ▄ ▄ ▄▄▄   ▄ ▄ ▄ ▄ ▄   ▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄   ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄▄▄   ▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄          ▄ ▄▄▄ ▄ ▄   ▄ ▄▄▄   ▄▄▄ ▄▄▄ ▄ ▄   ▄▄▄ ▄ ▄▄▄ ▄▄▄          ▄▄▄ ▄ ▄   ▄▄▄ ▄▄▄ ▄▄▄   ▄▄▄ ▄▄▄ ▄   ▄ ▄ ▄'
-const expected = 'THE 39761 QUICK BROWN FOXES JUMP OVER THE 45802 LAZY DOGS'
-
-test('pull numbers', () => {
-  expect(solve()).toEqual(expected)
-})
-
-const solve = () => {
-  const words = String(scriptArgs).split`       `
-  const first = words[1].trim()
-  const second = words[8].trim()
-  const firstNumber = first.split`   `.map(x => morseToNumber(x)).join``
-  const secondNumber = second.split`   `.map(x => morseToNumber(x)).join``
-  return `THE ${firstNumber} QUICK BROWN FOXES JUMP OVER THE ${secondNumber} LAZY DOGS`
+  return arr.sort((a, b) => a - b)
 }
 
 test('averages', () => {
@@ -149,22 +18,7 @@ const averages = (size, arr) => {
   return [+postive.toFixed(6), +negative.toFixed(6), +zeros.toFixed(6)]
 }
 
-test('staircase', () => {
-  const e = `     #\n    ##\n   ###\n  ####\n #####\n######`
-  expect(staircase(1)).toEqual('#')
-  expect(staircase(2)).toEqual(' #\n##')
-  expect(staircase(3)).toEqual('  #\n ##\n###')
-  expect(staircase(6)).toEqual(e)
-})
-const f = (n, c) => Array(n).fill(c).join``
-function staircase(n) {
-  const y = Array(n)
-    .fill('1')
-    .map((x, i) => `${f(n - i - 1, ' ') + f(i + 1, '#')}\n`)
-  return y.join``.slice(0, -1)
-}
-
-test('minMax', () => {
+test('minMax sum of 4 numbers', () => {
   expect(minMax('1 2 3 4 5')).toEqual('10 14')
   expect(minMax('5 5 5 5 5')).toEqual('20 20')
 })
@@ -193,4 +47,81 @@ const minMaxUnfair = s => {
     .reverse()
     .slice(0, k)
   return Math.max(...two) - Math.min(...two)
+}
+
+const readableList = c => (c.length === 1 ? c[0] : `${c.slice(0, -1).join`, `} and ${c[c.length - 1]}`)
+
+test('matrices', () => {
+  expect(rotateMatrix(matrix)).toEqual(expectedMatrix)
+})
+const matrix = [[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]]
+const expectedMatrix = [[1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3], [4, 4, 4, 4]]
+const rotateMatrix = a => a.map((x, i) => a.map(y => y[i]))
+const goodSudoku = [[1, 4, 2, 3], [3, 2, 4, 1], [4, 1, 3, 2], [2, 3, 1, 4]]
+const badSudoku = [[1, 4, 2, 3], [3, 2, 4, 1], [4, 1, 2, 3], [2, 3, 1, 4]]
+
+test('sudoku', () => {
+  expect(isValidSudoku([[1, 2], [2, 1]])).toEqual(true)
+  expect(isValidSudoku([[1, 2], [1, 2]])).toEqual(false)
+  expect(isValidSudoku([[1, 2, 3], [3, 1, 2], [3, 1, 2]])).toEqual(false)
+  expect(isValidSudoku(matrix)).toEqual(false)
+  expect(isValidSudoku(goodSudoku)).toEqual(true)
+  expect(isValidSudoku(badSudoku)).toEqual(false)
+})
+
+const isValidSudoku = data => {
+  const shouldBe = Array(data.length)
+    .fill()
+    .map((x, i) => i + 1).join``
+  const validRow = r => !r.filter(x => typeof x !== 'number').length && r.sort((a, b) => a - b).join`` === shouldBe
+  const r = rotateMatrix(data)
+  return Array(data.length)
+    .fill()
+    .map((x, i) => validRow(data[i]) && validRow(r[i]))
+    .reduce((acc, x) => (!x ? (acc = false) : acc))
+}
+test('molecules', () => {
+  expect(parseMolecule('H2O')).toEqual({H: 2, O: 1})
+  expect(parseMolecule('Mg(OH)2')).toEqual({Mg: 1, O: 2, H: 2})
+  // expect(parseMolecule('Fe(NO3)2')).toEqual({Fe: 2, N: 2, O: 6})
+  // expect(parseMolecule('K4[ON(SO3)2]2')).toEqual({K: 4, O: 14, N: 2, S: 4})
+})
+
+function parseMolecule(formula) {
+  let notation = {}
+  const molecules = formula.match(/[A-Z][a-z]?\d*|(?<!\([^)]*)\(.*\)\d+(?![^(]*\))/g)
+  console.log(molecules)
+  molecules.forEach(x => {
+    t = {}
+    const hasBrackets = x[0] === '[' || x[0] === '('
+    const number = x.match(/\d/g)
+    const letters = x.replace(x.match(/\d/g), '')
+    if (!hasBrackets) t[letters] = +number || 1
+    else
+      x.slice(1, -2).split``.forEach(y => {
+        t[y] = +x[x.length - 1]
+      })
+
+    notation = {...notation, ...t}
+  })
+  return notation
+}
+test('prime', () => {
+  expect(isPrime(0)).toBeFalsy()
+  expect(isPrime(1)).toBeFalsy()
+  expect(isPrime(2)).toBeTruthy()
+  expect(isPrime(101)).toBeTruthy()
+})
+const isPrime = i => {
+  // for (t = d = 2; d < i; ) t = i % d++ && t
+  for (t = d = 2; d < i; ) return i % d++
+  return i > 1
+}
+test('duplicateCount', () => {
+  expect(duplicateCount('acbde')).toEqual(0)
+  expect(duplicateCount('aabbcde')).toEqual(2)
+  expect(duplicateCount('Indivisibility')).toEqual(1)
+})
+const duplicateCount = text => {
+  return (text.toLowerCase().split``.sort().join``.match(/([^])\1+/g) || []).length
 }

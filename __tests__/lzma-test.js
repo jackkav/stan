@@ -14,9 +14,16 @@ const expected = `ᦡ桃x惌Ԁጠ泶ᨠ狠登ཱྀ兂⑆࿎淀ïഢ憆ᄽㄉ婑៏
 // test('16bit decompress', () => {
 //   expect(LZString.decompressFromUTF16(expected)).toEqual(pi)
 // })
+test('golfed compress', () => {
+  expect(compressUTF16('jackkav')).toEqual('ૢ౑䇌ሦ爠 ')
+  expect(compressUTF16('ǴǴǴǴǴǵǵǵǵ')).toEqual('䘐ʅ㸠Ⲡ ')
+  expect(compressUTF16('你好你好你好你好你好你好你好你好')).toEqual('䃾⦝᫝剈 ')
+  expect(compressUTF16(pi)).toEqual(expected)
+})
 
 test('8bit compress', () => {
   expect(compress('jackkav')).toEqual([106, 97, 99, 107, 107, 97, 118])
+  const c = compress(pi)
   expect(compress(pi)).toEqual(c)
 })
 test('8bit decompress', () => {
@@ -24,5 +31,3 @@ test('8bit decompress', () => {
   expect(decompress([106, 97, 99, 107, 107, 97, 118])).toEqual('jackkav')
   expect(decompress(c)).toEqual(pi)
 })
-
-const c = compress(pi)
