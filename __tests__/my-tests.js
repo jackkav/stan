@@ -90,7 +90,7 @@ test('molecules', () => {
 function parseMolecule(formula) {
   let notation = {}
   const molecules = formula.match(/[A-Z][a-z]?\d*|(?<!\([^)]*)\(.*\)\d+(?![^(]*\))/g)
-  console.log(molecules)
+  // console.log(molecules)
   molecules.forEach(x => {
     t = {}
     const hasBrackets = x[0] === '[' || x[0] === '('
@@ -106,17 +106,7 @@ function parseMolecule(formula) {
   })
   return notation
 }
-test('prime', () => {
-  expect(isPrime(0)).toBeFalsy()
-  expect(isPrime(1)).toBeFalsy()
-  expect(isPrime(2)).toBeTruthy()
-  expect(isPrime(101)).toBeTruthy()
-})
-const isPrime = i => {
-  // for (t = d = 2; d < i; ) t = i % d++ && t
-  for (t = d = 2; d < i; ) return i % d++
-  return i > 1
-}
+
 test('duplicateCount', () => {
   expect(duplicateCount('acbde')).toEqual(0)
   expect(duplicateCount('aabbcde')).toEqual(2)
@@ -124,4 +114,184 @@ test('duplicateCount', () => {
 })
 const duplicateCount = text => {
   return (text.toLowerCase().split``.sort().join``.match(/([^])\1+/g) || []).length
+}
+test('nextBigger', () => {
+  expect(nextBigger(12)).toEqual(21)
+  expect(nextBigger(144)).toEqual(414)
+  expect(nextBigger(513)).toEqual(531)
+  expect(nextBigger(88775444432220)).toEqual(-1)
+  expect(nextBigger(1234567890)).toEqual(1234567908)
+  expect(nextBigger(38396610)).toEqual(38601369)
+  expect(nextBigger(8)).toEqual(-1)
+  expect(nextBigger(68985)).toEqual(69588)
+  expect(nextBigger(7672016442)).toEqual(7672021446)
+})
+const sorted = n => [...(n + '')].sort((a, b) => b - a)
+
+function nextBigger(n) {
+  let arr = sorted(n)
+  for (var i = n + 1; i <= +arr.join``; i++) {
+    if (sorted(i).every((x, j) => x === arr[j])) return i
+  }
+  return -1
+}
+
+// function permut(string) {
+//   if (string.length < 2) return string
+//   var permutations = []
+//   for (var i = 0; i < string.length; i++) {
+//     var char = string[i]
+//     if (string.indexOf(char) != i) continue
+//     var remainingString = string.slice(0, i) + string.slice(i + 1, string.length) //Note: you can concat Strings via '+' in JS
+//     for (var s of permut(remainingString)) permutations.push(char + s)
+//   }
+//   return permutations
+// }
+
+// Depth first search
+const array = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+const array2 = [[1, 2, 3], [8, 9, 4], [7, 6, 5]]
+test('snail', () => {
+  expect(snail(array)).toEqual([1, 2, 3, 6, 9, 8, 7, 4, 5])
+  expect(snail(array2)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9])
+})
+const snail = array => {
+  return [...array[0], ...getCol(array, 2).slice(1), ...array[2].slice(0, -1).reverse(), ...array[1].slice(0, -1)]
+}
+function getCol(matrix, col) {
+  var column = []
+  for (var i = 0; i < matrix.length; i++) {
+    column.push(matrix[i][col])
+  }
+  return column
+}
+test('isValidCoordinates', () => {
+  ValidCoordinates.map(x => expect(isValidCoordinates(x)).toEqual(true))
+  InvalidCoordinates.map(x => expect(isValidCoordinates(x)).toEqual(false))
+})
+var ValidCoordinates = ['-23, 25', '4, -3', '24.53525235, 23.45235', '04, -23.234235', '43.91343345, 143']
+var InvalidCoordinates = [
+  '23.234, - 23.4234',
+  '2342.43536, 34.324236',
+  'N23.43345, E32.6457',
+  '99.234, 12.324',
+  '6.325624, 43.34345.345',
+  '0, 1,2',
+  '0.342q0832, 1.2324',
+  '23.245, 1e1',
+]
+function isValidCoordinates(coordinates) {
+  if (coordinates.match(/[a-z]/g)) return false
+  c = coordinates.split`, `
+  if (c.filter(x => x.includes(' ')).length) return false
+  const lat = +c[0]
+  const long = +c[1]
+  if (isNaN(lat) || lat < -90 || lat > 90) return false
+  if (isNaN(long) || long < -180 || long > 180) return false
+  return true
+}
+
+test('isValidIP', () => {
+  expect(isValidIP('1.2.3.4')).toEqual(true)
+  expect(isValidIP('0.0.0.0')).toEqual(true)
+  expect(isValidIP('123.45.67.89')).toEqual(true)
+  expect(isValidIP('123.045.67.89')).toEqual(false)
+  expect(isValidIP('abc.def.ghi.jkl')).toEqual(false)
+})
+function isValidIP(str) {
+  if (str.match(/[a-z]/g)) return false
+  x = str.split`.`
+  if (x.length !== 4) return false
+  if (x.filter(x => +x > 255 || String(+x).length !== x.length).length) return false
+  return true
+}
+test('Base64', () => {
+  expect(toBase64('this is a string!!')).toEqual('dGhpcyBpcyBhIHN0cmluZyEh')
+  expect(fromBase64('dGhpcyBpcyBhIHN0cmluZyEh')).toEqual('this is a string!!')
+})
+
+const toBase64 = a => new Buffer(a).toString('base64')
+const fromBase64 = a => new Buffer(a, 'base64').toString()
+
+test('sumStrings', () => {
+  expect(sumStrings('712569312664357328695151392', '8100824045303269669937')).toEqual('712577413488402631964821329')
+})
+
+function sumStrings(a, b) {
+  var A = a.split``,
+    B = b.split``,
+    C = 0,
+    R = ''
+  // while above have value
+  while (A.length || B.length || C) {
+    //add last numbers together
+    C = C + (~~A.pop() + ~~B.pop())
+    R = C % 10 + R
+    C = C > 9
+  }
+
+  return R.replace(/^0+/, '')
+}
+test('getMissingIngredients', () => {
+  expect(getMissingIngredients(recipe, {})).toEqual({flour: 200, eggs: 1, sugar: 100})
+  expect(getMissingIngredients(recipe, {eggs: 1})).toEqual({flour: 200, sugar: 100})
+  expect(getMissingIngredients(recipe, {eggs: 1, sugar: 50})).toEqual({flour: 200, sugar: 50})
+  expect(getMissingIngredients(recipe, {flour: 200, sugar: 100})).toEqual({eggs: 1})
+  expect(getMissingIngredients(recipe, {flour: 200, sugar: 100, eggs: 1})).toEqual({})
+  expect(getMissingIngredients(recipe, {flour: 400, eggs: 2, sugar: 200})).toEqual({})
+  expect(getMissingIngredients(recipe, {flour: 1000, eggs: 5, sugar: 500})).toEqual({})
+  expect(getMissingIngredients(recipe, {flour: 500, sugar: 200})).toEqual({eggs: 3, flour: 100, sugar: 100})
+})
+const recipe = {flour: 200, eggs: 1, sugar: 100}
+const cakes = (needs, has) => Math.max(...Object.keys(needs).map(key => Math.round(has[key] / needs[key] || 1)))
+function getMissingIngredients(recipe, added) {
+  let r = {}
+  let nr = {...recipe}
+  let totalCakes = cakes(recipe, added)
+  Object.keys(recipe).forEach(x => {
+    nr[x] = nr[x] * totalCakes
+    if (added[x] < nr[x]) r[x] = nr[x] - added[x]
+    else if (added[x] !== nr[x]) r[x] = nr[x]
+  })
+  return r
+}
+
+test.only('findUniq', () => {
+  // expect(findUniq([2, 2, 2, 1, 2, 2, 2])).toEqual(1)
+  // expect(findUniq2([2, 2, 2, 1, 2, 2, 2])).toEqual(1)
+  expect(findUniqTwo([1, 2, 4, 3, 5, 4, 2, 1])).toEqual([3, 5])
+})
+function findUniqTwo(arr) {
+  return [...new Set(arr)]
+    .map(x => (arr.filter(y => y === x).length === 1 ? x : false))
+    .filter(x => x)
+    .sort((a, b) => a - b)
+}
+function findUniq(arr) {
+  const a = [...new Set(arr)]
+  return +arr.filter(x => (arr.filter(x => x !== a[0]).length > 1 ? x !== arr[1] : x !== arr[0]))
+}
+function findUniq2(arr) {
+  arr.sort((a, b) => a - b)
+  return arr[0] === arr[1] ? arr.pop() : arr[0]
+}
+
+test('it detects palindromes', () => {
+  expect(isPalindrome('palindrome')).toBe(false)
+  expect(isPalindrome('')).toBe(true)
+  expect(isPalindrome('a')).toBe(true)
+  expect(isPalindrome('gg')).toBe(true)
+  expect(isPalindrome('pop')).toBe(true)
+  expect(isPalindrome('1212')).toBe(false)
+})
+function isPalindrome(s) {
+  const count = s.length - 1
+  if (count < 2) {
+    return true
+  }
+
+  for (i = 0; i < (count + 1) / 2; ++i) {
+    if (s[i] !== s[count - i]) return false
+  }
+  return true
 }

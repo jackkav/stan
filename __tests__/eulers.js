@@ -27,3 +27,33 @@ function euler(v) {
   console.log(arr)
   return val.toString()
 }
+
+test('squareOfTheSum', () => {
+  expect(squareOfTheSum(10)).toEqual(3025)
+})
+
+const squareOfTheSum = x => {
+  const z = Array(x)
+    .fill()
+    .map((x, i) => i + 1)
+    .reduce((acc, x) => x + acc, 0)
+  return z * z
+}
+
+test('sumOfTheSquares', () => {
+  expect(sumOfTheSquares(10)).toEqual(385)
+})
+
+const sumOfTheSquares = x =>
+  Array(x)
+    .fill()
+    .map((x, i) => (i + 1) * (i + 1))
+    .reduce((acc, x) => x + acc)
+
+test('differenceOfSquares', () => {
+  expect(differenceOfSquares(10)).toEqual(2640)
+})
+
+function differenceOfSquares(n) {
+  return squareOfTheSum(n) - sumOfTheSquares(n)
+}

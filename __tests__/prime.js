@@ -70,3 +70,14 @@ const primeNumbers = i => {
   }
   return true
 }
+test('prime', () => {
+  expect(isPrime(0)).toBeFalsy()
+  expect(isPrime(1)).toBeFalsy()
+  expect(isPrime(2)).toBeTruthy()
+  expect(isPrime(101)).toBeTruthy()
+})
+const isPrime = i => {
+  // for (t = d = 2; d < i; ) t = i % d++ && t
+  for (t = d = 2; d < i; ) return i % d++
+  return i > 1
+}
