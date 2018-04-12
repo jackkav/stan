@@ -81,32 +81,27 @@ const isValidSudoku = data => {
     .reduce((acc, x) => (!x ? (acc = false) : acc))
 }
 test('molecules', () => {
+  expect(parseMolecule('H')).toEqual({H: 1})
   expect(parseMolecule('H2O')).toEqual({H: 2, O: 1})
+  expect(parseMolecule('HMg')).toEqual({H: 1, Mg: 1})
+  expect(parseMolecule('[H]Mg')).toEqual({H: 1, Mg: 1})
+  expect(parseMolecule('H2MgH')).toEqual({H: 3, Mg: 1})
   expect(parseMolecule('Mg(OH)2')).toEqual({Mg: 1, O: 2, H: 2})
-  // expect(parseMolecule('Fe(NO3)2')).toEqual({Fe: 2, N: 2, O: 6})
-  // expect(parseMolecule('K4[ON(SO3)2]2')).toEqual({K: 4, O: 14, N: 2, S: 4})
+  expect(parseMolecule('(NO3)2')).toEqual({N: 2, O: 6})
+  expect(parseMolecule('Fe(NO3)2')).toEqual({Fe: 1, N: 2, O: 6})
+  expect(parseMolecule('K4[ON(SO3)2]2')).toEqual({K: 4, O: 14, N: 2, S: 4})
 })
-
-function parseMolecule(formula) {
-  let notation = {}
-  const molecules = formula.match(/[A-Z][a-z]?\d*|(?<!\([^)]*)\(.*\)\d+(?![^(]*\))/g)
-  // console.log(molecules)
-  molecules.forEach(x => {
-    t = {}
-    const hasBrackets = x[0] === '[' || x[0] === '('
-    const number = x.match(/\d/g)
-    const letters = x.replace(x.match(/\d/g), '')
-    if (!hasBrackets) t[letters] = +number || 1
-    else
-      x.slice(1, -2).split``.forEach(y => {
-        t[y] = +x[x.length - 1]
-      })
-
-    notation = {...notation, ...t}
-  })
-  return notation
+function parseMolecule(s) {
+  var o = {}
+  while (s !== (s = s.replace(/[[({]([a-z0-9]+)[\])}]([0-9]+)/gi, (f, e, n) => repeat(e, n))));
+  s.replace(/([A-Z][a-z]?)([0-9]+)?/g, (f, e, n) => (o[e] = (o[e] || 0) + +(n || 1)))
+  return o
 }
 
+function repeat(s, n) {
+  for (var r = ''; n--; r += s);
+  return r
+}
 test('duplicateCount', () => {
   expect(duplicateCount('acbde')).toEqual(0)
   expect(duplicateCount('aabbcde')).toEqual(2)
@@ -256,7 +251,7 @@ function getMissingIngredients(recipe, added) {
   return r
 }
 
-test.only('findUniq', () => {
+test('findUniq', () => {
   // expect(findUniq([2, 2, 2, 1, 2, 2, 2])).toEqual(1)
   // expect(findUniq2([2, 2, 2, 1, 2, 2, 2])).toEqual(1)
   expect(findUniqTwo([1, 2, 4, 3, 5, 4, 2, 1])).toEqual([3, 5])
@@ -294,4 +289,62 @@ function isPalindrome(s) {
     if (s[i] !== s[count - i]) return false
   }
   return true
+}
+
+const distance = (coord1, coord2) => {
+  const coords = [coord1, coord2].map(splitOnLatLon)
+  const decimals = [].concat.apply([], coords).map(toDecimal)
+  return Math.floor(haversine(...decimals, 6371) / 10) * 10
+}
+const splitOnLatLon = coord => coord.split`, `
+const toDecimal = dms => {
+  let regex = /(\d+)° (\d+)′ (\d+)″ ((N)|(S)|(E)|(W))/
+  let [_, degrees, minutes, seconds, __, N, S, E, W] = regex.exec(dms)
+  let decimal = +degrees + minutes / 60 + seconds / (60 * 60)
+  return decimal * (N || E ? 1 : -1) * (Math.PI / 180)
+}
+const haversine = (lat1, lon1, lat2, lon2, R) => {
+  let dlon = lon2 - lon1
+  let dlat = lat2 - lat1
+  let a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2)
+  let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c
+}
+describe('distance', () => {
+  it('calculates the distance between two points', () => {
+    expect(distance('48° 12′ 30″ N, 16° 22′ 23″ E', '48° 12′ 30″ N, 16° 22′ 23″ E')).toBe(0)
+    expect(distance('48° 12′ 30″ N, 16° 22′ 23″ E', '23° 33′ 0″ S, 46° 38′ 0″ W')).toBe(10130)
+    expect(distance('48° 12′ 30″ N, 16° 22′ 23″ E', '58° 18′ 0″ N, 134° 25′ 0″ W')).toBe(7870)
+  })
+  it('splits correctly', () => {
+    expect(splitOnLatLon('48° 12′ 30″ N, 16° 22′ 23″ E')).toEqual(
+      expect.arrayContaining(['48° 12′ 30″ N', '16° 22′ 23″ E'])
+    )
+  })
+  it('converts dms to decimal format', () => {
+    expect(toDecimal('48° 12′ 30″ N')).toBeCloseTo(0.8413, 0.001)
+  })
+  it('haversine', () => {
+    expect(haversine(48.2083, 16.373, 48.2083, 16.373, 6371)).toBeCloseTo(0, 0.001)
+    expect(haversine(48.2083, 16.373, 16.373, 48.2083, 6371)).toBeCloseTo(3133.445, 0.001)
+  })
+})
+test('zipWith', () => {
+  expect(zipWith([1, 2], [10, 20], [100, 200], addStuff)).toEqual([111, 222])
+})
+const addStuff = (a, b, c) => a + b + c
+
+const zip = rows => rows[0].map((_, c) => rows.map(row => row[c]))
+
+const zipWith = (...props) => {
+  const p = Object.values(props)
+  const f = p.pop()
+  return zip(p).map(x => f(...x))
+}
+test('sameStructureAs', () => {
+  expect(sameStructureAs([1, [1, 1]], [2, [2, 2]])).toEqual(true)
+  expect(sameStructureAs([[1, 2], 1, 2], [1, 2])).toEqual(false)
+})
+const sameStructureAs = function(t, other) {
+  return t.length === other.length ? t.every((x, i) => (Array.isArray(x) ? sameStructureAs(x, other[i]) : true)) : false
 }
