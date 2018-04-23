@@ -1,15 +1,17 @@
+const aconcat = (...n) => [].concat.apply([], ...n)
+
 const sierpTriangle = n =>
-  n > 0
-    ? concat(
+  n < 1
+    ? ['▲']
+    : aconcat(
         ap(
           [
-            map(xs => ap([s => concat(replicate(Math.pow(2, n - 1), s))], [' ', ' ']).join(xs)),
+            map(xs => ap([s => ''.concat.apply('', replicate(Math.pow(2, n - 1), s))], [' ', ' ']).join(xs)),
             map(xs => [xs, xs].join` `),
           ],
           [sierpTriangle(n - 1)]
         )
       )
-    : ['▲']
 
 const replicate = (n, a) => {
   let v = [a],
@@ -27,15 +29,7 @@ const curry = f => a => b => f(a, b)
 
 const map = curry((f, xs) => xs.map(f))
 
-const ap = (fs, xs) => [].concat.apply([], fs.map(f => [].concat.apply([], xs.map(x => [f(x)]))))
-
-// concat :: [[a]] -> [a] || [String] -> String
-const concat = xs => {
-  if (xs.length > 0) {
-    const unit = typeof xs[0] === 'string' ? '' : []
-    return unit.concat.apply(unit, xs)
-  } else return []
-}
+const ap = (fs, xs) => aconcat(fs.map(f => aconcat(xs.map(x => [f(x)]))))
 
 test('triangle', () => {
   expect(sierpTriangle(4).join('\n')).toEqual(`               ▲               
