@@ -70,6 +70,7 @@ const primeNumbers = i => {
   }
   return true
 }
+
 test('prime', () => {
   expect(isPrime(0)).toBeFalsy()
   expect(isPrime(1)).toBeFalsy()
@@ -80,4 +81,11 @@ const isPrime = i => {
   // for (t = d = 2; d < i; ) t = i % d++ && t
   for (t = d = 2; d < i; ) return i % d++
   return i > 1
+}
+function divisors(integer) {
+  let i = integer
+  let l = []
+  for (let j = 1; j <= i; j++) j > 1 && j < integer && !(i % j) && l.push(j)
+  console.log(l)
+  return l
 }
