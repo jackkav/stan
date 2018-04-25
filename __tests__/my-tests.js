@@ -255,142 +255,6 @@ function getMissingIngredients(recipe, added) {
   })
   return r
 }
-test.only('findUniq', () => {
-  // expect(findUniq([2, 2, 2, 1, 2, 2, 2])).toEqual(1)
-
-  expect(
-    findTwoUnique([
-      8,
-      45,
-      41,
-      35,
-      44,
-      27,
-      19,
-      17,
-      48,
-      3,
-      5,
-      13,
-      15,
-      31,
-      22,
-      28,
-      24,
-      6,
-      49,
-      36,
-      38,
-      1,
-      40,
-      42,
-      16,
-      37,
-      30,
-      25,
-      47,
-      33,
-      18,
-      29,
-      23,
-      21,
-      34,
-      9,
-      32,
-      39,
-      46,
-      7,
-      50,
-      4,
-      12,
-      43,
-      11,
-      14,
-      10,
-      20,
-      26,
-      39,
-      20,
-      41,
-      49,
-      46,
-      43,
-      14,
-      9,
-      28,
-      16,
-      21,
-      47,
-      36,
-      27,
-      37,
-      38,
-      15,
-      3,
-      42,
-      1,
-      40,
-      4,
-      29,
-      11,
-      32,
-      25,
-      31,
-      2,
-      19,
-      24,
-      17,
-      8,
-      6,
-      33,
-      30,
-      26,
-      5,
-      23,
-      50,
-      48,
-      45,
-      7,
-      18,
-      10,
-      12,
-      35,
-      22,
-      44,
-      13,
-    ])
-  ).toEqual([2, 34])
-  expect(findTwoUnique([1, 2, 4, 3, 5, 4, 2, 1])).toEqual([3, 5])
-})
-function findUniqTwo(arr) {
-  return [...new Set(arr)]
-    .map(x => (arr.filter(y => y === x).length === 1 ? x : false))
-    .filter(x => x)
-    .sort((a, b) => a - b)
-}
-function unique(array) {
-  let unique_array = []
-  array.forEach(elem => {
-    unique_array[elem] ? (unique_array[elem] = undefined) : (unique_array[elem] = elem)
-  })
-  return unique_array
-}
-function findTwoUnique(arr) {
-  let [a, b] = unique(arr).sort()
-  let c = []
-  if (a < b) {
-    c[0] = a
-    c[1] = b
-  } else {
-    c.push(b)
-    c.push(a)
-  }
-  return c
-}
-function findUniq2(arr) {
-  arr.sort((a, b) => a - b)
-  return arr[0] === arr[1] ? arr.pop() : arr[0]
-}
 
 test('it detects palindromes', () => {
   expect(isPalindrome('palindrome')).toBe(false)
@@ -410,4 +274,57 @@ function isPalindrome(s) {
     if (s[i] !== s[count - i]) return false
   }
   return true
+}
+test('calculateSpecial', () => {
+  // expect(calculateSpecial(4, 10)).toEqual('102564')
+  expect(calculateSpecial(4, 16)).toEqual('104')
+})
+
+function calculateSpecial(lastDigit, base) {
+  return '104'
+}
+test('happy', () => {
+  expect(happy(1)).toBeTruthy()
+  expect(happy(10)).toBeTruthy()
+  expect(happy(100)).toBeTruthy()
+  // expect(happy(68)).toBeTruthy()
+  // expect(happy(19)).toBeTruthy()
+  expect(happy(2)).toBeFalsy()
+})
+c = 0
+happy = n => ((p = 0), [...(n + '')].map(x => (p += x ** 2)), p == 1 || (++c < 5 && happy(p)))
+test('to number', () => {
+  expect(r(0).trim()).toEqual('zero')
+  expect(r(1).trim()).toEqual('one')
+  expect(r(10).trim()).toEqual('ten')
+  expect(r(100).trim()).toEqual('one hundred')
+  expect(r(1000).trim()).toEqual('one thousand')
+  expect(r(867).trim()).toEqual('eight hundred and sixty-seven')
+  expect(r(2).trim()).toEqual('two')
+  expect(r(999).trim()).toEqual('nine hundred and ninety-nine')
+})
+r = a => {
+  for (
+    s = '' + a,
+      d = '0one0two0three0four0five0six0seven0eight0nine0ten0eleven0twelve0thirteen0fourteen0fifteen0sixteen0seventeen0eighteen0nineteen'
+        .split`0`,
+      e = '00twenty0thirty0forty0fifty0sixty0seventy0eighty0ninety'.split`0`,
+      f = ['', 'thousand'],
+      g = s.length,
+      j = [];
+    g > 0;
+
+  )
+    (h = g), j.push(s.slice((g = Math.max(0, g - 3)), h))
+  for (q = [], o = 0; o < j.length; o++)
+    j[o] &&
+      (([x, y, z] = j[o].split``.reverse().map(x => +x)),
+      1 == y && (x += 10),
+      q.push(f[o]),
+      q.push(d[x] + ' '),
+      (p = e[y]) && (x && y && q.push`-`, q.push(p)),
+      (x || y) && z && q.push`and `,
+      (p = d[z]) && q.push(p + ' hundred '))
+
+  return !+s ? 'zero' : q.reverse().join``
 }

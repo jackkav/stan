@@ -5,6 +5,7 @@ test('toAscii85', () => {
 
   expect('<~ARTY*~>'.fromAscii85()).toEqual('easy')
 })
+
 String.prototype.toAscii85 = function() {
   var encode = function(s) {
     var length = s.length + 1
