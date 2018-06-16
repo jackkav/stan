@@ -43,6 +43,28 @@ test('arrays can be wierd', () => {
   expect(arr[1][1]).toBeTruthy()
 })
 
+test('array splicing', () => {
+  let arr = Array(5)
+    .fill(0)
+    .map((_, i) => i)
+  let p = arr.indexOf(3)
+  arr.splice(p, 1)
+  expect(arr).toHaveLength(4)
+})
+
+test('array distinct', () => {
+  let arr = [5, 5, 5, 2, 2, 2, 2, 2, 9, 4, 'x', 'x']
+  let counts = {}
+
+  for (var i = 0; i < arr.length; i++) {
+    var num = arr[i]
+    counts[num] = counts[num] ? counts[num] + 1 : 1
+  }
+
+  expect(Object.keys(counts)).toHaveLength(5)
+  expect(counts.x).toEqual(2)
+})
+
 test('who`s your NaN', () => {
   expect(isNaN()).toBeTruthy()
   expect(isNaN(NaN)).toBeTruthy()
