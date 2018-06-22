@@ -292,7 +292,7 @@ test('it detects palindromes', () => {
   expect(isPalindrome('pop')).toBe(true)
   expect(isPalindrome('1212')).toBe(false)
 })
-function isPalindrome(s) {
+function isPalindromeOld(s) {
   const count = s.length - 1
   if (count < 2) {
     return true
@@ -302,6 +302,10 @@ function isPalindrome(s) {
     if (s[i] !== s[count - i]) return false
   }
   return true
+}
+// https://stackoverflow.com/questions/14813369/palindrome-check-in-javascript
+function isPalindrome(s, i) {
+  return (i = i || 0) < 0 || i >= s.length >> 1 || (s[i] == s[s.length - 1 - i] && isPalindrome(s, ++i))
 }
 test('calculateSpecial', () => {
   expect(calculateSpecial(4, 16)).toEqual('104')
