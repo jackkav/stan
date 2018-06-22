@@ -66,8 +66,12 @@ const frequency = arr => {
 const findHands = arr => {
   if (hasStraight(arr)) {
     const top5 = sortByHand(arr).slice(0, -2)
-    if (hasFlush(top5))
+
+    if (hasFlush(top5)) {
+      if (top5[0].card === 'A')
+        return top5.map(x => (x.suitFreq >= 5 ? Object.assign(x, {hand: 'royal-flush', strength: 9}) : x))
       return top5.map(x => (x.suitFreq >= 5 ? Object.assign(x, {hand: 'straight-flush', strength: 8}) : x))
+    }
   }
 
   if (hasFourOfAKind(arr))
@@ -117,6 +121,9 @@ test('poker', () => {
   )
   expect({type: 'flush', ranks: ['Q', 'J', '10', '5', '3']}).toEqual(
     hand(['A♠', 'K♦'], ['J♥', '5♥', '10♥', 'Q♥', '3♥'])
+  )
+  expect({type: 'royal-flush', ranks: ['A', 'K', 'Q', 'J', '10']}).toEqual(
+    hand(['A♦', 'K♦'], ['J♦', '5♥', '10♦', 'Q♦', '3♥'])
   )
   expect({type: 'full house', ranks: ['A', 'K']}).toEqual(hand(['A♠', 'A♦'], ['K♣', 'K♥', 'A♥', 'Q♥', '3♦']))
   expect({type: 'full house', ranks: ['10', 'K']}).toEqual(hand(['10♠', '10♦'], ['K♣', 'K♥', '10♥', 'Q♥', '3♦']))
