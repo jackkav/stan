@@ -32,6 +32,9 @@ test('arrays have tricks for selecting the beginning or end', () => {
   const {[a.length - 1]: last} = a
   expect(last).toEqual(6)
 
+  const last2 = a.slice(-1)
+  expect(last2).toEqual([6])
+
   // all but last
   const allBut = a.slice(0, -1)
   expect(allBut).toEqual([1, 2, 3, 4, 5])

@@ -33,6 +33,10 @@ const cellsAsArray = n => {
   }
   return r
 }
+// ar=n=>{
+//   w=[[0,0,1]]
+//   for(j=n;j--;)w.push(o(w))
+//   return w}
 test('cells as array', () => {
   expect(cellsAsArray(1)).toEqual([[0, 0, 1]])
   expect(cellsAsArray(2)).toEqual([[0, 0, 1], [0, 1, 1]])
@@ -79,6 +83,7 @@ const newStateFromNeighbours = n => {
   const b = +('0b' + n.join``)
   return +(b && b !== 4 && b !== 7)
 }
+// o=r=>u(r).map(n=>+(b=+('0b'+n.join``),b&&b!=4&&b!=7))
 test('new state from neighbour', () => {
   expect(newStateFromNeighbours([1, 1, 1])).toEqual(0)
   expect(newStateFromNeighbours([0, 0, 0])).toEqual(0)
