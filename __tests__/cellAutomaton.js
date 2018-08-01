@@ -1,3 +1,5 @@
+// e=a=>{for(i=0,r='';i<a;r+='\n'){d=q(a)[i++].map(x=>(+x?'█':' ')).join``
+// r+=a>3?' '.repeat(a-d.length)+d:d}return r}
 const cellsAsNumber = a => {
   // 1. initialize state
   // 2. for n get next row and append to state
@@ -25,6 +27,8 @@ test('cell as number', () => {
 0111
 1101`)
 })
+// q=n=>{for(w=[[0,0,1]],j=n;j--;)w.push(o(w))
+//   return w}
 const cellsAsArray = n => {
   const init = [0, 0, 1]
   let r = [init]
@@ -33,10 +37,7 @@ const cellsAsArray = n => {
   }
   return r
 }
-// ar=n=>{
-//   w=[[0,0,1]]
-//   for(j=n;j--;)w.push(o(w))
-//   return w}
+
 test('cells as array', () => {
   expect(cellsAsArray(1)).toEqual([[0, 0, 1]])
   expect(cellsAsArray(2)).toEqual([[0, 0, 1], [0, 1, 1]])
@@ -44,7 +45,7 @@ test('cells as array', () => {
 const toBlocks = b => {
   return b.map(x => (x ? '█' : ' ')).join``
 }
-test('nextRow from previous', () => {
+test('array to blocks', () => {
   expect(toBlocks([0, 0, 1])).toEqual(`  █`)
   expect(toBlocks([0, 0, 1, 0, 1])).toEqual(`  █ █`)
 })
@@ -60,6 +61,9 @@ test('nextRow from previous', () => {
   expect(nextRow([[0, 0, 1], [0, 1, 1], [1, 1, 1]])).toEqual([1, 1, 0, 1])
 })
 
+// u=a=>{z=a[a.length-1].map((x,y,z)=>[z[y-1],z[y],z[y+1]])
+//   a.length>2&&z.unshift([0,0,1])
+//   return z}
 const getNeighbours = a => {
   const x = a[a.length - 1]
   // console.log(x)
