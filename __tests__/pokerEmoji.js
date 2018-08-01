@@ -35,22 +35,19 @@ const toObject = cardEmoji => {
 const utilityFilter = (a, k, t) => a.filter(x => x.freq === k).length === t
 const hasPair = arr => utilityFilter(arr, 2, 2)
 const hasTwoPair = arr => utilityFilter(arr, 2, 4)
-const hasFullHouse = arr => {
-  return (hasThreeOfAKind(arr) && hasPair(arr)) || arr.filter(x => x.freq === 3).length === 6
-}
+const hasFullHouse = arr => (hasThreeOfAKind(arr) && hasPair(arr)) || utilityFilter(arr, 3, 6)
 const hasThreeOfAKind = arr => utilityFilter(arr, 3, 3)
 const hasFourOfAKind = arr => utilityFilter(arr, 4, 4)
-const hasFlush = arr => {
-  return arr.filter(x => x.suitFreq >= 5).length >= 5
-}
-const hasStraight = arr => {
-  return arr.filter(x => x.connectors === 2).length > 2
-}
+const hasFlush = arr => arr.filter(x => x.suitFreq >= 5).length >= 5
+const hasStraight = arr => arr.filter(x => x.connectors).length === 5
+
 const getConnectors = arr =>
-  arr.map((x, y, z) => ({
-    n: +x,
-    conn: +z[y + 1] === +x + 1 && +z[y - 1] === +x - 1 ? 2 : +z[y + 1] === +x + 1 || +z[y - 1] === +x - 1,
-  }))
+  arr.map((n, i) => {
+    const lowAce = n === 14 && arr[i - 1] === 5
+    const conn = arr.includes(n + 1) || arr.includes(n - 1) || lowAce
+    return {n, conn}
+  })
+
 const sortByHand = arr =>
   arr
     .sort((a, b) => b.n - a.n)
@@ -62,19 +59,20 @@ const toHand = cardEmojis => {
 
   let freq = frequency(cardsAsObjects.map(x => x.card))
   let suitFreq = frequency(cardsAsObjects.map(x => x.suit))
-  let connections = getConnectors(cardsAsObjects.map(x => x.n).sort((a, b) => a - b))
+  let connections = getConnectors(cardsAsObjects.sort((a, b) => a.n - b.n).map(x => x.n))
   let withFreq = cardsAsObjects.map((x, i, t) =>
     Object.assign(x, {
-      freq: freq.filter(y => y.c === x.card)[0].f,
-      suitFreq: suitFreq.filter(y => y.c === x.suit)[0].f,
-      connectors: connections.filter(y => y.n === x.n)[0].conn,
+      freq: freq.find(y => y.c === x.card).f,
+      suitFreq: suitFreq.find(y => y.c === x.suit).f,
+      connectors: connections.find(y => y.n === x.n).conn,
     })
   )
 
   // console.log(debug, withFreq)
   if (hasStraight(withFreq)) {
     if (hasFlush(withFreq)) {
-      if (sortByHand(withFreq)[0].card === 'Ace') return 'Royal Flush'
+      const sorted = sortByHand(withFreq)
+      if (sorted[0].card === 'Ace' && sorted[1].card === 'King') return 'Royal Flush'
       return 'Straight Flush'
     }
   }
@@ -118,14 +116,37 @@ test('pokerEmojis to hand', () => {
   expect(toHand('🂩🂢🂫🂨🂤')).toEqual('Flush')
   expect(toHand('🂪🃊🃙🂺🃉')).toEqual('Full House')
   expect(toHand('🃗🃔🃕🃖🃘')).toEqual('Straight Flush')
-  // expect(toHand('🃃🃅🃂🃁🃄')).toEqual('Straight Flush')
+  expect(toHand('🃃🃅🃂🃁🃄')).toEqual('Straight Flush')
   expect(toHand('🃛🃝🃞🃚🃑')).toEqual('Royal Flush')
   expect(toHand('🃆🂵🂧🃙🃈')).toEqual('Straight')
-  // expect(toHand('🃔🂢🂳🃑🂵')).toEqual('Straight')
+  expect(toHand('🃔🂢🂳🃑🂵')).toEqual('Straight')
 })
 const matchEmojis = a => a.map(toHand).join`
 `
 test('pokerEmojis to hands', () => {
   expect(matchEmojis(['🃁🂱🂷🃘🂤', '🂤🃔🃓🃝🃃'])).toEqual(`Pair
 Two Pair`)
+})
+
+test('connectors check', () => {
+  expect(getConnectors([1, 2])).toEqual([{conn: true, n: 1}, {conn: true, n: 2}])
+  expect(getConnectors([2, 4, 6])).toEqual([{conn: false, n: 2}, {conn: false, n: 4}, {conn: false, n: 6}])
+  expect(getConnectors([2, 4, 6])).toEqual([{conn: false, n: 2}, {conn: false, n: 4}, {conn: false, n: 6}])
+})
+
+test('aces are high and low?', () => {
+  expect(getConnectors([10, 11, 12, 13, 14])).toEqual([
+    {conn: true, n: 10},
+    {conn: true, n: 11},
+    {conn: true, n: 12},
+    {conn: true, n: 13},
+    {conn: true, n: 14},
+  ])
+  expect(getConnectors([2, 3, 4, 5, 14])).toEqual([
+    {conn: true, n: 2},
+    {conn: true, n: 3},
+    {conn: true, n: 4},
+    {conn: true, n: 5},
+    {conn: true, n: 14},
+  ])
 })
