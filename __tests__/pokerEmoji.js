@@ -27,7 +27,7 @@ const toObject = cardEmoji => {
   let hex = toHex(cardEmoji)
   let index = +('0x' + hex[1])
   return {
-    n: index >= 13 ? index - 1 : index === 1 ? 14 : index,
+    n: index,
     suit: suit(hex[0]),
     card: hexToCard(hex[1]),
   }
@@ -38,21 +38,21 @@ const hasTwoPair = arr => utilityFilter(arr, 2, 4)
 const hasFullHouse = arr => (hasThreeOfAKind(arr) && hasPair(arr)) || utilityFilter(arr, 3, 6)
 const hasThreeOfAKind = arr => utilityFilter(arr, 3, 3)
 const hasFourOfAKind = arr => utilityFilter(arr, 4, 4)
-const hasFlush = arr => arr.filter(x => x.suitFreq >= 5).length >= 5
+const hasFlush = arr => arr.filter(x => x.suitFreq === 5).length === 5
 const hasStraight = arr => arr.filter(x => x.connectors).length === 5
 
 const getConnectors = arr =>
   arr.map((n, i) => {
-    const lowAce = n === 14 && arr[i - 1] === 5
-    const conn = arr.includes(n + 1) || arr.includes(n - 1) || lowAce
+    const highAce = n === 1 && arr[i + 1] === 10
+    const conn = arr.includes(n + 1) || arr.includes(n - 1) || highAce
     return {n, conn}
   })
 
-const sortByHand = arr =>
-  arr
-    .sort((a, b) => b.n - a.n)
-    .sort((a, b) => b.strength - a.strength)
-    .sort((a, b) => b.freq - a.freq)
+// const sortByHand = arr =>
+//   arr
+//     .sort((a, b) => b.n - a.n)
+//     .sort((a, b) => b.strength - a.strength)
+//     .sort((a, b) => b.freq - a.freq)
 const toHand = cardEmojis => {
   const cardsAsObjects = [...cardEmojis].map(toObject)
   const debug = cardsAsObjects.map(x => x.card + ' of ' + x.suit)
@@ -68,11 +68,9 @@ const toHand = cardEmojis => {
     })
   )
 
-  // console.log(debug, withFreq)
   if (hasStraight(withFreq)) {
     if (hasFlush(withFreq)) {
-      const sorted = sortByHand(withFreq)
-      if (sorted[0].card === 'Ace' && sorted[1].card === 'King') return 'Royal Flush'
+      if (withFreq.every(x => x.n > 9 || x.n === 1)) return 'Royal Flush'
       return 'Straight Flush'
     }
   }
@@ -82,7 +80,6 @@ const toHand = cardEmojis => {
   if (hasStraight(withFreq)) return 'Straight'
   if (hasThreeOfAKind(withFreq)) return 'Three of a Kind'
   if (hasTwoPair(withFreq)) return 'Two Pair'
-
   if (hasPair(withFreq)) return 'Pair'
 
   return 'High Card'
@@ -135,18 +132,41 @@ test('connectors check', () => {
 })
 
 test('aces are high and low?', () => {
-  expect(getConnectors([10, 11, 12, 13, 14])).toEqual([
+  expect(getConnectors([1, 10, 11, 13, 14])).toEqual([
+    {conn: true, n: 1},
     {conn: true, n: 10},
     {conn: true, n: 11},
-    {conn: true, n: 12},
     {conn: true, n: 13},
     {conn: true, n: 14},
   ])
-  expect(getConnectors([2, 3, 4, 5, 14])).toEqual([
+  expect(getConnectors([1, 2, 3, 4, 5])).toEqual([
+    {conn: true, n: 1},
     {conn: true, n: 2},
     {conn: true, n: 3},
     {conn: true, n: 4},
     {conn: true, n: 5},
-    {conn: true, n: 14},
   ])
 })
+test('golfingFrequency', () => {
+  expect(golfingFrequency([1, 2, 1])).toEqual([{c: 1, f: 2}, {c: 2, f: 1}])
+  expect(golfingFrequency(['a', '1', 0])).toEqual([{c: 0, f: 1}, {c: '1', f: 1}, {c: 'a', f: 1}])
+})
+const golfingFrequency = arr => {
+  let a = []
+  let b = []
+  let prev
+  arr.sort()
+  for (var i = 0; i < arr.length; i++) {
+    // different to last
+    if (arr[i] !== prev) {
+      // add to distinct array
+      a.push(arr[i])
+      // add to count array to 1 at same index
+      b.push(1)
+      // same as last increment count array
+    } else b[b.length - 1]++
+    // set last
+    prev = arr[i]
+  }
+  return a.map((c, i) => ({c, f: b[i]}))
+}
