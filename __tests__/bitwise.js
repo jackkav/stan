@@ -43,13 +43,14 @@ test('colors', () => {
   expect(green(g)).toEqual(255)
   expect(green(r)).toEqual(0)
   expect(blue(b)).toEqual(255)
+  expect(hex2rgb('ff0000')).toEqual([255, 0, 0])
 })
 
 const rgb = hex => parseInt(hex, 16)
 const red = hex => (rgb(hex) >> 16) & 0xff // returns 255
 const green = hex => (rgb(hex) >> 8) & 0xff // 170
 const blue = hex => rgb(hex) & 0xff // 221
-
+const hex2rgb = hex => [(parseInt(hex, 16) >> 16) & 0xff, (parseInt(hex, 16) >> 8) & 0xff, parseInt(hex, 16) & 0xff]
 // shift bits
 test('shift bits', () => {
   const n = 12 // 1100

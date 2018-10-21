@@ -55,7 +55,7 @@ const getConnectors = arr =>
 //     .sort((a, b) => b.freq - a.freq)
 const toHand = cardEmojis => {
   const cardsAsObjects = [...cardEmojis].map(toObject)
-  const debug = cardsAsObjects.map(x => x.card + ' of ' + x.suit)
+  // const debug = cardsAsObjects.map(x => x.card + ' of ' + x.suit)
 
   let freq = frequency(cardsAsObjects.map(x => x.card))
   let suitFreq = frequency(cardsAsObjects.map(x => x.suit))
@@ -151,22 +151,9 @@ test('golfingFrequency', () => {
   expect(golfingFrequency([1, 2, 1])).toEqual([{c: 1, f: 2}, {c: 2, f: 1}])
   expect(golfingFrequency(['a', '1', 0])).toEqual([{c: 0, f: 1}, {c: '1', f: 1}, {c: 'a', f: 1}])
 })
-const golfingFrequency = arr => {
-  let a = []
-  let b = []
-  let prev
-  arr.sort()
-  for (var i = 0; i < arr.length; i++) {
-    // different to last
-    if (arr[i] !== prev) {
-      // add to distinct array
-      a.push(arr[i])
-      // add to count array to 1 at same index
-      b.push(1)
-      // same as last increment count array
-    } else b[b.length - 1]++
-    // set last
-    prev = arr[i]
-  }
-  return a.map((c, i) => ({c, f: b[i]}))
+const golfingFrequency = x => {
+  let p
+  x.sort()
+  for (i = 0, a = [], b = []; i < x.length; i++) x[i] !== p ? (a.push(x[i]), b.push(1)) : b[b.length - 1]++, (p = x[i])
+  return a.map((v, i) => ({v, f: b[i]}))
 }

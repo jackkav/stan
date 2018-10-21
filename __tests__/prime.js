@@ -36,7 +36,7 @@ const emirp = `13
 991`
 
 test('emirp numbers', () => {
-  expect(emirpNumbers().split`\n`.length).toEqual(emirp.split`\n`.length)
+  expect(emirpNumbers().split`\n`).toHaveLength(emirp.split`\n`.length)
   expect(emirpNumbers()).toEqual(emirp)
 })
 const emirpNumbers = () => {
@@ -77,9 +77,9 @@ test('prime', () => {
   expect(isPrime(2)).toBeTruthy()
   expect(isPrime(101)).toBeTruthy()
 })
+// for (t = d = 2; d < i; ) t = i % d++ && t
 const isPrime = i => {
-  // for (t = d = 2; d < i; ) t = i % d++ && t
-  for (t = d = 2; d < i; ) return i % d++
+  for (d = 2; d < i; ) return i % d++
   return i > 1
 }
 function divisors(integer) {
